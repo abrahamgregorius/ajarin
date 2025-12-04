@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
+import SafeArea from '../components/SafeArea';
 
 export default function Home() {
     return (
         <>
-            <Navbar></Navbar>
+            {/* <Navbar></Navbar> */}
+            <SafeArea></SafeArea>
+        
         </>
     )
 }

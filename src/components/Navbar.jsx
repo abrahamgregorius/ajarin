@@ -24,8 +24,8 @@ export default function Navbar() {
                 </ul>
                 <button onClick={() => setIsOpen(!isOpen)} className={'text-2xl flex md:hidden text-white font-bold'} >&equiv;</button>
             </nav>
-            <div className={`${isOpen ? 'flex' : 'hidden'} rounded-xl flex-col left-1/2 transform -translate-x-1/2 -translate-y-1/2 top-[9rem] max-w-[90%] w-full fixed bg-linear-to-r from-[#2765e8] to-[#3878ff]`}>
-                    <ul className="list-none px-4 py-2 ">
+            <div className={`${isOpen ? 'flex' : 'hidden'} md:hidden rounded-xl flex-col left-1/2 transform -translate-x-1/2 -translate-y-1/2 top-[9rem] max-w-[90%] w-full fixed bg-linear-to-r from-[#2765e8] to-[#3878ff]`}>
+                    <ul className="list-none flex flex-col text-right px-4 py-2 ">
                         <li className="md:ml-8"><a href="#" className={`${isScrolled ? 'text-black' : 'text-[#f0f7ff]'} text-lg no-underline transition-colors duration-300 hover:text-gray-700`}>Home</a></li>
                         <li className="md:ml-8"><a href="#" className={`${isScrolled ? 'text-black' : 'text-[#f0f7ff]'} text-lg no-underline transition-colors duration-300 hover:text-gray-700`}>About</a></li>
                         <li className="md:ml-8"><a href="#" className={`${isScrolled ? 'text-black' : 'text-[#f0f7ff]'} text-lg no-underline transition-colors duration-300 hover:text-gray-700`}>Contact</a></li>
