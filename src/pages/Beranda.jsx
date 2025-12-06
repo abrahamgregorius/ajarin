@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import SafeArea from '../components/SafeArea';
 
 export default function Home() {
@@ -67,12 +68,14 @@ export default function Home() {
                         <h2 className="text-lg font-bold mb-3 text-gray-800">Pilih Kelas</h2>
                         <div className="grid grid-cols-3 gap-3">
                             {classes.map((cls, index) => (
-                                <button key={cls} className={`bg-gradient-to-r cursor-pointer ${buttonGradients[index % buttonGradients.length]} text-white p-4 rounded-lg font-bold text-sm transition-all shadow-md flex items-center justify-center space-x-2`}>
-                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
-                                    </svg>
-                                    <span>Kelas {cls}</span>
-                                </button>
+                                <>
+                                    <Link to={`/kelas/${cls}`} key={cls} className={`bg-gradient-to-r cursor-pointer ${buttonGradients[index % buttonGradients.length]} text-white p-4 rounded-lg font-bold text-sm transition-all shadow-md flex items-center justify-center space-x-2`}>
+                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                                        </svg>
+                                        <span>Kelas {cls}</span>
+                                    </Link>
+                                </>
                             ))}
                         </div>
                     </div>
