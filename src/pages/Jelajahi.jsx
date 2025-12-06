@@ -14,21 +14,21 @@ export default function Discover() {
 
     return (
         <>
-            <SafeArea className="p-4">
-                <div className="header mb-6">
-                    <h1 className='text-2xl font-bold text-gray-800 mb-2'>Temukan Kursus Baru</h1>
-                    <p className='text-gray-600'>Jelajahi ribuan kursus dari guru terbaik Indonesia</p>
+            <SafeArea className="p-3">
+                <div className="header mb-4">
+                    <h1 className='text-xl font-bold text-gray-800 mb-1'>Temukan Kursus Baru</h1>
+                    <p className='text-gray-600 text-sm'>Jelajahi ribuan kursus dari guru terbaik Indonesia</p>
                 </div>
 
-                <div className="search-filter mb-6">
+                <div className="search-filter mb-4">
                     <input
                         type="text"
                         placeholder="🔍 Cari kursus..."
-                        className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+                        className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3 text-sm"
                     />
                     <div className="flex space-x-2 overflow-x-auto pb-2">
                         {filters.map(filter => (
-                            <button key={filter} className="px-4 py-2 bg-blue-100 text-blue-600 rounded-full whitespace-nowrap hover:bg-blue-200 transition-colors">
+                            <button key={filter} className="px-3 py-1.5 bg-blue-100 text-blue-600 rounded-full whitespace-nowrap hover:bg-blue-200 transition-colors text-sm">
                                 {filter}
                             </button>
                         ))}
@@ -36,24 +36,24 @@ export default function Discover() {
                 </div>
 
                 <div className="courses-grid">
-                    <h2 className="text-xl font-semibold mb-4 text-gray-800">Kursus Terbaru</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <h2 className="text-lg font-semibold mb-3 text-gray-800">Kursus Terbaru</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {courses.map(course => (
-                            <div key={course.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                                <img src={course.thumbnail} alt={course.title} className="w-full h-40 object-cover" />
-                                <div className="p-4">
+                            <div key={course.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                                <img src={course.thumbnail} alt={course.title} className="w-full h-32 object-cover" />
+                                <div className="p-3">
                                     <div className="flex justify-between items-start mb-2">
                                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                                             course.price === 'Gratis' ? 'bg-green-100 text-green-600' : 'bg-purple-100 text-purple-600'
                                         }`}>
                                             {course.price}
                                         </span>
-                                        <span className="text-yellow-500 text-sm">⭐ {course.rating}</span>
+                                        <span className="text-yellow-500 text-xs">⭐ {course.rating}</span>
                                     </div>
-                                    <h3 className="font-bold text-lg text-gray-800 mb-1">{course.title}</h3>
-                                    <p className="text-blue-600 font-medium text-sm mb-1">{course.instructor}</p>
-                                    <p className="text-gray-500 text-sm">{course.subject} • {course.level}</p>
-                                    <button className="mt-3 w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-2 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transition-all">
+                                    <h3 className="font-bold text-sm text-gray-800 mb-1 line-clamp-2">{course.title}</h3>
+                                    <p className="text-blue-600 font-medium text-xs mb-1">{course.instructor}</p>
+                                    <p className="text-gray-500 text-xs">{course.subject} • {course.level}</p>
+                                    <button className="mt-2 w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-1.5 rounded-md font-medium text-xs hover:from-blue-600 hover:to-purple-700 transition-all">
                                         Lihat Detail
                                     </button>
                                 </div>
@@ -62,8 +62,8 @@ export default function Discover() {
                     </div>
                 </div>
 
-                <div className="load-more mt-8 text-center">
-                    <button className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors">
+                <div className="load-more mt-6 text-center">
+                    <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm">
                         Muat Lebih Banyak
                     </button>
                 </div>

@@ -1,27 +1,27 @@
 
 import { Route, Routes } from 'react-router-dom'
-import Home from './pages/Home'
-import Discover from './pages/Discover'
-import Subscription from './pages/Subscription'
-import Profile from './pages/Profile'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import About from './pages/About'
-import Contact from './pages/Contact'
+import Beranda from './pages/Beranda'
+import Jelajahi from './pages/Jelajahi'
+import Langganan from './pages/Langganan'
+import Profil from './pages/Profil'
+import Masuk from './pages/Masuk'
+import Daftar from './pages/Daftar'
+import Tentang from './pages/Tentang'
+import Kontak from './pages/Kontak'
 
 function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/discover" element={<Discover />} />
-        <Route path="/subscription" element={<Subscription />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
+        <Route path="/" element={<Beranda />} />
+        <Route path="/beranda" element={<Beranda />} />
+        <Route path="/jelajahi" element={<Jelajahi />} />
+        <Route path="/langganan" element={<Langganan />} />
+        <Route path="/profil" element={<Profil />} />
+        <Route path="/masuk" element={<Masuk />} />
+        <Route path="/daftar" element={<Daftar />} />
+        <Route path="/tentang" element={<Tentang />} />
+        <Route path="/kontak" element={<Kontak />} />
       </Routes>
     </>
   )
