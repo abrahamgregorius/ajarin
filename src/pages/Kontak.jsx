@@ -1,27 +1,28 @@
 import SafeArea from '../components/SafeArea';
+import { GraduationCap, Mail, Phone, MapPin, Clock, Send, MessageCircle, Facebook, Instagram, Twitter, Linkedin } from 'lucide-react';
 
 export default function Contact() {
     const contactInfo = [
         {
-            icon: '📧',
+            icon: Mail,
             title: 'Email',
             details: 'support@ajarin.id',
             description: 'Kirim email untuk pertanyaan umum'
         },
         {
-            icon: '📱',
+            icon: Phone,
             title: 'WhatsApp',
             details: '+62 812-3456-7890',
             description: 'Chat langsung dengan tim support'
         },
         {
-            icon: '📍',
+            icon: MapPin,
             title: 'Alamat',
             details: 'Jl. Pendidikan No. 123, Jakarta Pusat',
             description: 'Kunjungi kantor kami'
         },
         {
-            icon: '🕒',
+            icon: Clock,
             title: 'Jam Kerja',
             details: 'Senin - Jumat: 08:00 - 17:00 WIB',
             description: 'Waktu operasional support'
@@ -48,111 +49,134 @@ export default function Contact() {
     ];
 
     return (
-        <>
-            <SafeArea className="p-3">
-                <div className="hero-section mb-6 bg-gradient-to-br from-blue-50 to-indigo-100 p-6 rounded-xl border border-blue-200/50 shadow-sm">
-                    <div className="flex flex-col items-center text-center space-y-3">
-                        <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
-                            <span className="text-2xl text-white">💬</span>
-                        </div>
-                        <div className="space-y-2">
-                            <h1 className="text-2xl font-bold text-gray-800 tracking-tight">Hubungi Kami</h1>
-                            <p className="text-base text-gray-600 max-w-md leading-relaxed">
-                                Kami siap membantu Anda dengan pertanyaan tentang AJARIN
-                            </p>
-                        </div>
+        <SafeArea className="bg-gray-50 min-h-screen">
+            {/* Top App Bar */}
+            <div className="bg-white shadow-sm border-b">
+                <div className="px-4 py-3 flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                        <GraduationCap size={28} className="text-blue-600" />
+                        <h1 className="text-xl font-bold text-gray-900">AJARIN</h1>
                     </div>
                 </div>
+            </div>
 
-                <div className="contact-info mb-6">
-                    <h2 className="text-lg font-bold text-gray-800 mb-3 text-center">Informasi Kontak</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {contactInfo.map((info, index) => (
-                            <div key={index} className="bg-white p-4 rounded-lg shadow-md border-l-4 border-blue-500">
-                                <div className="flex items-start space-x-3">
-                                    <div className="text-2xl">{info.icon}</div>
-                                    <div>
-                                        <h3 className="font-bold text-gray-800 text-sm">{info.title}</h3>
-                                        <p className="text-blue-600 font-semibold text-sm">{info.details}</p>
-                                        <p className="text-gray-600 text-xs mt-1">{info.description}</p>
+            <div className="p-4 space-y-6">
+                {/* Header */}
+                <div className="bg-white rounded-lg p-6 shadow-md text-center">
+                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <MessageCircle size={32} className="text-blue-600" />
+                    </div>
+                    <h1 className="text-2xl font-bold text-gray-900 mb-2">Hubungi Kami</h1>
+                    <p className="text-gray-600">Kami siap membantu Anda dengan pertanyaan tentang AJARIN</p>
+                </div>
+
+                {/* Contact Info */}
+                <div>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-4">Informasi Kontak</h2>
+                    <div className="grid grid-cols-1 gap-4">
+                        {contactInfo.map((info, index) => {
+                            const IconComponent = info.icon;
+                            return (
+                                <div key={index} className="bg-white p-4 rounded-lg shadow-md">
+                                    <div className="flex items-start space-x-3">
+                                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <IconComponent size={20} className="text-blue-600" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-medium text-gray-900">{info.title}</h3>
+                                            <p className="text-blue-600 font-medium">{info.details}</p>
+                                            <p className="text-gray-600 text-sm mt-1">{info.description}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
 
-                <div className="contact-form mb-6">
-                    <h2 className="text-lg font-bold text-gray-800 mb-3 text-center">Kirim Pesan</h2>
-                    <div className="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto">
+                {/* Contact Form */}
+                <div>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-4">Kirim Pesan</h2>
+                    <div className="bg-white p-6 rounded-lg shadow-md">
                         <form className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nama</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Nama</label>
                                     <input
                                         type="text"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                        className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         placeholder="Nama lengkap"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                                     <input
                                         type="email"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                        className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         placeholder="nama@email.com"
                                     />
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Subjek</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Subjek</label>
                                 <input
                                     type="text"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder="Subjek pesan"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Pesan</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Pesan</label>
                                 <textarea
                                     rows="4"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder="Tulis pesan Anda di sini..."
                                 ></textarea>
                             </div>
                             <button
                                 type="submit"
-                                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-2 px-3 rounded-lg font-medium text-sm hover:from-blue-600 hover:to-purple-700 transition-all duration-200"
+                                className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
                             >
-                                Kirim Pesan
+                                <Send size={20} />
+                                <span>Kirim Pesan</span>
                             </button>
                         </form>
                     </div>
                 </div>
 
-                <div className="faq-section mb-6">
-                    <h2 className="text-lg font-bold text-gray-800 mb-3 text-center">Pertanyaan Umum</h2>
-                    <div className="space-y-3 max-w-4xl mx-auto">
+                {/* FAQ */}
+                <div>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-4">Pertanyaan Umum</h2>
+                    <div className="space-y-3">
                         {faqs.map((faq, index) => (
                             <div key={index} className="bg-white p-4 rounded-lg shadow-md">
-                                <h3 className="font-bold text-gray-800 text-sm mb-2">{faq.question}</h3>
+                                <h3 className="font-medium text-gray-900 mb-2">{faq.question}</h3>
                                 <p className="text-gray-600 text-sm leading-relaxed">{faq.answer}</p>
                             </div>
                         ))}
                     </div>
                 </div>
 
-                <div className="social-media bg-gradient-to-r from-purple-500 to-pink-600 p-4 rounded-xl text-white text-center">
-                    <h2 className="text-lg font-bold mb-2">Ikuti Kami</h2>
-                    <p className="text-purple-100 text-sm mb-4">Dapatkan update terbaru dan tips belajar di media sosial</p>
+                {/* Social Media */}
+                <div className="bg-white p-6 rounded-lg shadow-md text-center">
+                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Ikuti Kami</h2>
+                    <p className="text-gray-600 text-sm mb-4">Dapatkan update terbaru dan tips belajar di media sosial</p>
                     <div className="flex justify-center space-x-4">
-                        <a href="#" className="text-2xl hover:scale-110 transition-transform">📘</a>
-                        <a href="#" className="text-2xl hover:scale-110 transition-transform">📷</a>
-                        <a href="#" className="text-2xl hover:scale-110 transition-transform">🐦</a>
-                        <a href="#" className="text-2xl hover:scale-110 transition-transform">💼</a>
+                        <a href="#" className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white hover:bg-blue-700 transition-colors">
+                            <Facebook size={20} />
+                        </a>
+                        <a href="#" className="w-10 h-10 bg-pink-600 rounded-lg flex items-center justify-center text-white hover:bg-pink-700 transition-colors">
+                            <Instagram size={20} />
+                        </a>
+                        <a href="#" className="w-10 h-10 bg-blue-400 rounded-lg flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
+                            <Twitter size={20} />
+                        </a>
+                        <a href="#" className="w-10 h-10 bg-blue-700 rounded-lg flex items-center justify-center text-white hover:bg-blue-800 transition-colors">
+                            <Linkedin size={20} />
+                        </a>
                     </div>
                 </div>
-            </SafeArea>
-        </>
+            </div>
+        </SafeArea>
     )
 }

@@ -2,6 +2,7 @@ import SafeArea from "../../components/SafeArea";
 import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { db, supabase } from "../../lib";
+import { GraduationCap, ArrowLeft, BookOpen, Calculator, Globe, ChevronRight } from 'lucide-react';
 
 export default function MapelDetail() {
     const { kelasId, mapelId } = useParams();
@@ -56,118 +57,93 @@ export default function MapelDetail() {
         45: 'Matematika', 46: 'Bahasa Indonesia', 47: 'IPA', 48: 'IPS',
     };
 
+    const subjectIcons = {
+        'Matematika': Calculator,
+        'Bahasa Indonesia': BookOpen,
+        'IPS': Globe
+    };
+
+    const subjectName = mapelNames[parseInt(mapelId)] || `Mata Pelajaran ${mapelId}`;
+    const IconComponent = subjectIcons[subjectName] || BookOpen;
+
     return (
-        <>
-            <SafeArea className="">
-                {/* Header dengan tema pelajaran */}
-                <div className="header mb-6 bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600 p-6 text-white relative overflow-hidden">
-                    <div className="absolute inset-0 opacity-20">
-                        <div className="absolute top-4 left-6 text-5xl animate-bounce">📖</div>
-                        <div className="absolute top-12 right-10 text-4xl animate-pulse">🧠</div>
-                        <div className="absolute bottom-6 left-1/3 text-5xl animate-bounce delay-1000">🎨</div>
-                        <div className="absolute bottom-4 right-6 text-4xl animate-pulse delay-500">🔍</div>
-                    </div>
-                    <div className="relative z-10">
-                        <div className="flex items-center mb-2">
-                            <span className="text-4xl mr-3">🎓</span>
-                            <h1 className="font-bold text-3xl">{mapelNames[parseInt(mapelId)] || `Subject ${mapelId}`}</h1>
-                            <span className="text-4xl ml-3">📚</span>
-                        </div>
-                        <p className="text-green-100 text-lg font-medium">Mari jelajahi materi pembelajaran yang menarik! 🌟</p>
-                        <div className="mt-3 flex items-center space-x-2">
-                            <span className="text-2xl">👩‍🏫</span>
-                            <span className="text-sm bg-white/20 px-3 py-1 rounded-full">Petualangan Pengetahuan</span>
-                        </div>
+        <SafeArea className="bg-gray-50 min-h-screen">
+            {/* Top App Bar */}
+            <div className="bg-white shadow-sm border-b">
+                <div className="px-4 py-3 flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                        <Link to={`/kelas/${kelasId}`} className="p-1 hover:bg-gray-100 rounded-lg">
+                            <ArrowLeft size={24} className="text-gray-600" />
+                        </Link>
+                        <GraduationCap size={28} className="text-blue-600" />
+                        <h1 className="text-xl font-bold text-gray-900">AJARIN</h1>
                     </div>
                 </div>
+            </div>
 
-                <div className="px-4 py-2">
-                    {loading ? (
-                        <div className="text-center py-12">
-                            <div className="inline-block animate-spin text-4xl mb-4">🔄</div>
-                            <p className="text-gray-600 font-medium">Memuat materi seru... 🎭</p>
-                        </div>
-                    ) : error ? (
-                        <div className="text-center py-12">
-                            <div className="text-6xl mb-4">😵</div>
-                            <p className="text-red-500 font-medium">Ups! Ada kesalahan: {error}</p>
-                            <p className="text-gray-500 text-sm mt-2">Coba refresh halaman ya! 🔄</p>
-                        </div>
-                    ) : materials.length > 0 ? (
-                        <div className="space-y-4">
-                            <div className="text-center mb-6">
-                                <h2 className="text-xl font-bold text-gray-800 mb-2">Materi Pembelajaran Seru! 🎪</h2>
-                                <p className="text-gray-600">Setiap materi penuh dengan pengetahuan dan kegembiraan belajar 🎈</p>
+            {/* Header */}
+            <div className="bg-white mx-4 mt-4 rounded-lg p-6 shadow-md">
+                <div className="flex items-center space-x-4 mb-2">
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <IconComponent size={24} className="text-blue-600" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900">{subjectName}</h1>
+                        <p className="text-gray-600">Kelas {kelasId}</p>
+                    </div>
+                </div>
+                <p className="text-gray-600 mt-2">Pilih materi yang ingin dipelajari</p>
+            </div>
+
+            <div className="p-4">
+                {loading ? (
+                    <div className="text-center py-12">
+                        <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+                        <p className="text-gray-600">Memuat materi...</p>
+                    </div>
+                ) : error ? (
+                    <div className="text-center py-12">
+                        <div className="text-red-500 mb-4">
+                            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span className="text-2xl">⚠️</span>
                             </div>
-                            {materials.map((material, index) => {
-                                const materialEmojis = {
-                                    'Bilangan': '🔢',
-                                    'Aljabar': '🧮',
-                                    'Geometri': '📐',
-                                    'Membaca': '📖',
-                                    'Menulis': '✍️',
-                                    'Tata Bahasa': '📝',
-                                    'Makhluk Hidup': '🐾',
-                                    'Energi': '⚡',
-                                    'Lingkungan': '🌱',
-                                    'Geografi': '🌍',
-                                    'Ekonomi': '💰',
-                                    'Sejarah': '🏛️'
-                                };
-                                const emoji = materialEmojis[material.name] || '🎯';
-
-                                return (
-                                    <Link
-                                        key={material.id}
-                                        to={`/kelas/${kelasId}/${mapelId}/${material.id}`}
-                                        className="block bg-gradient-to-r from-white to-green-50 p-5 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-transparent hover:border-green-300"
-                                        style={{ animationDelay: `${index * 100}ms` }}
-                                    >
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center space-x-4">
-                                                <div className="text-4xl animate-bounce">{emoji}</div>
-                                                <div>
-                                                    <h3 className="font-bold text-lg text-gray-800 mb-1">{material.name}</h3>
-                                                    <div className="flex items-center space-x-2">
-                                                        <span className="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full font-medium">
-                                                            📋 {material.topikCount} topik menarik
-                                                        </span>
-                                                        <span className="text-yellow-500 text-sm">⭐</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="text-right">
-                                                <button className="bg-gradient-to-r from-green-500 to-teal-600 text-white px-6 py-3 rounded-xl font-bold text-sm hover:from-green-600 hover:to-teal-700 transition-all transform hover:scale-110 shadow-lg flex items-center space-x-2">
-                                                    <span>Jelajahi!</span>
-                                                    <span className="text-lg">🚀</span>
-                                                </button>
-                                                <div className="mt-2 flex justify-end space-x-1">
-                                                    <span className="text-xs text-gray-500">Klik untuk masuk</span>
-                                                    <span className="text-sm animate-pulse">👆</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                );
-                            })}
                         </div>
-                    ) : (
-                        <div className="text-center py-12">
-                            <div className="text-6xl mb-4">📭</div>
-                            <p className="text-gray-600 font-medium text-lg">Belum ada materi untuk mata pelajaran ini</p>
-                            <p className="text-gray-500 text-sm mt-2">Tunggu sebentar ya, guru sedang menyiapkan petualangan belajar! 🎪</p>
-                        </div>
-                    )}
-                </div>
-
-                {/* Footer motivasi */}
-                <div className="mt-8 px-4 pb-4">
-                    <div className="bg-gradient-to-r from-blue-100 to-purple-100 p-4 rounded-xl text-center">
-                        <div className="text-3xl mb-2">🎯💡</div>
-                        <p className="text-gray-700 font-medium">Setiap materi adalah langkah menuju pengetahuan baru! 🌟</p>
+                        <p className="text-red-500 font-medium">Terjadi kesalahan: {error}</p>
+                        <p className="text-gray-500 text-sm mt-2">Silakan coba lagi</p>
                     </div>
-                </div>
-            </SafeArea>
-        </>
-    );
+                ) : materials.length > 0 ? (
+                    <div className="space-y-3">
+                        {materials.map((material, index) => (
+                            <Link
+                                key={material.id}
+                                to={`/kelas/${kelasId}/${mapelId}/${material.id}`}
+                                className="block bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center space-x-4">
+                                        <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                            <BookOpen size={24} className="text-green-600" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-semibold text-gray-900">{material.name}</h3>
+                                            <p className="text-gray-600 text-sm">{material.topikCount} topik tersedia</p>
+                                        </div>
+                                    </div>
+                                    <ChevronRight size={20} className="text-gray-400" />
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-12">
+                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <BookOpen size={32} className="text-gray-400" />
+                        </div>
+                        <p className="text-gray-600 font-medium">Belum ada materi</p>
+                        <p className="text-gray-500 text-sm mt-2">Materi sedang disiapkan</p>
+                    </div>
+                )}
+            </div>
+        </SafeArea>
+    )
 }

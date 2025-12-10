@@ -1,34 +1,74 @@
 import SafeArea from '../components/SafeArea';
+import { GraduationCap, Target, Users, Award, BookOpen, UserCheck, Smartphone, BarChart3, MessageCircle } from 'lucide-react';
 
 export default function About() {
     const stats = [
-        { number: '1M+', label: 'Siswa Terdaftar' },
-        { number: '10,000+', label: 'Kursus Tersedia' },
-        { number: '500+', label: 'Guru Profesional' },
-        { number: '95%', label: 'Tingkat Kepuasan' }
+        { number: '1M+', label: 'Siswa Terdaftar', icon: Users },
+        { number: '10,000+', label: 'Kursus Tersedia', icon: BookOpen },
+        { number: '500+', label: 'Guru Profesional', icon: UserCheck },
+        { number: '95%', label: 'Tingkat Kepuasan', icon: Award }
     ];
 
-    const team = [
-        { name: 'Dr. Ahmad Santoso', role: 'CEO & Founder', image: 'https://via.placeholder.com/100/4ECDC4/FFFFFF?text=AS' },
-        { name: 'Prof. Siti Nurhaliza', role: 'Head of Education', image: 'https://via.placeholder.com/100/45B7D1/FFFFFF?text=SN' },
-        { name: 'Budi Prasetyo', role: 'Tech Lead', image: 'https://via.placeholder.com/100/F9CA24/FFFFFF?text=BP' },
-        { name: 'Maya Sari', role: 'Content Director', image: 'https://via.placeholder.com/100/E84393/FFFFFF?text=MS' }
+    const features = [
+        {
+            icon: BookOpen,
+            title: 'Kurikulum Terintegrasi',
+            description: 'Materi pembelajaran yang selaras dengan kurikulum nasional dan internasional',
+            color: 'bg-blue-100 text-blue-600'
+        },
+        {
+            icon: UserCheck,
+            title: 'Guru Berkualitas',
+            description: 'Tim pengajar terdiri dari guru-guru berpengalaman dan ahli di bidangnya',
+            color: 'bg-green-100 text-green-600'
+        },
+        {
+            icon: Smartphone,
+            title: 'Akses Dimana Saja',
+            description: 'Belajar fleksibel melalui aplikasi mobile dan website kapan saja',
+            color: 'bg-purple-100 text-purple-600'
+        },
+        {
+            icon: BarChart3,
+            title: 'Progress Tracking',
+            description: 'Pantau perkembangan belajar dengan laporan yang detail dan akurat',
+            color: 'bg-orange-100 text-orange-600'
+        }
     ];
 
     return (
-        <>
-            <SafeArea className="p-3">
-                <div className="hero-section mb-6 bg-gradient-to-r from-blue-500 to-purple-600 p-4 rounded-xl text-white text-center">
-                    <h1 className="text-2xl font-bold mb-2">Tentang AJARIN</h1>
-                    <p className="text-base text-blue-100 max-w-2xl mx-auto">
-                        Platform edukasi terdepan di Indonesia yang menghubungkan siswa dengan guru terbaik melalui teknologi modern
-                    </p>
+        <SafeArea className="bg-gray-50 min-h-screen">
+            {/* Top App Bar */}
+            <div className="bg-white shadow-sm border-b">
+                <div className="px-4 py-3 flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                        <GraduationCap size={28} className="text-blue-600" />
+                        <h1 className="text-xl font-bold text-gray-900">AJARIN</h1>
+                    </div>
+                </div>
+            </div>
+
+            <div className="p-4 space-y-6">
+                {/* Header */}
+                <div className="bg-white rounded-lg p-6 shadow-sm border text-center">
+                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <GraduationCap size={32} className="text-blue-600" />
+                    </div>
+                    <h1 className="text-2xl font-bold text-gray-900 mb-2">Tentang AJARIN</h1>
+                    <p className="text-gray-600">Platform edukasi terdepan di Indonesia yang menghubungkan siswa dengan guru terbaik melalui teknologi modern</p>
                 </div>
 
-                <div className="mission-section mb-6">
-                    <h2 className="text-lg font-bold text-gray-800 mb-3 text-center">Misi Kami</h2>
-                    <div className="bg-white p-4 rounded-lg shadow-md">
-                        <p className="text-gray-700 text-sm leading-relaxed text-center">
+                {/* Mission */}
+                <div>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-4">Misi Kami</h2>
+                    <div className="bg-white p-6 rounded-lg shadow-sm border">
+                        <div className="flex items-center space-x-3 mb-4">
+                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <Target size={24} className="text-blue-600" />
+                            </div>
+                            <h3 className="text-lg font-semibold text-gray-900">Misi AJARIN</h3>
+                        </div>
+                        <p className="text-gray-600 leading-relaxed">
                             Memberikan akses pendidikan berkualitas tinggi kepada setiap siswa di Indonesia,
                             mempersiapkan generasi muda menghadapi tantangan masa depan dengan kurikulum
                             yang relevan dan metode pembelajaran inovatif.
@@ -36,65 +76,60 @@ export default function About() {
                     </div>
                 </div>
 
-                <div className="stats-section mb-6">
-                    <h2 className="text-lg font-bold text-gray-800 mb-3 text-center">AJARIN dalam Angka</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {stats.map((stat, index) => (
-                            <div key={index} className="bg-gradient-to-br from-blue-50 to-purple-50 p-4 rounded-lg text-center border border-blue-100">
-                                <div className="text-2xl font-bold text-blue-600 mb-1">{stat.number}</div>
-                                <div className="text-gray-700 font-medium text-sm">{stat.label}</div>
-                            </div>
-                        ))}
+                {/* Stats */}
+                <div>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-4">AJARIN dalam Angka</h2>
+                    <div className="grid grid-cols-2 gap-4">
+                        {stats.map((stat, index) => {
+                            const IconComponent = stat.icon;
+                            return (
+                                <div key={index} className="bg-white p-4 rounded-lg shadow-sm border text-center">
+                                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                        <IconComponent size={24} className="text-blue-600" />
+                                    </div>
+                                    <div className="text-2xl font-bold text-gray-900 mb-1">{stat.number}</div>
+                                    <div className="text-gray-600 text-sm">{stat.label}</div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
 
-                <div className="features-section mb-6">
-                    <h2 className="text-lg font-bold text-gray-800 mb-3 text-center">Mengapa Memilih AJARIN?</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="bg-white p-4 rounded-lg shadow-md">
-                            <div className="text-2xl mb-2">🎓</div>
-                            <h3 className="text-lg font-bold text-gray-800 mb-1">Kurikulum Terintegrasi</h3>
-                            <p className="text-gray-600 text-sm">Materi pembelajaran yang selaras dengan kurikulum nasional dan internasional</p>
-                        </div>
-                        <div className="bg-white p-4 rounded-lg shadow-md">
-                            <div className="text-2xl mb-2">👨‍🏫</div>
-                            <h3 className="text-lg font-bold text-gray-800 mb-1">Guru Berkualitas</h3>
-                            <p className="text-gray-600 text-sm">Tim pengajar terdiri dari guru-guru berpengalaman dan ahli di bidangnya</p>
-                        </div>
-                        <div className="bg-white p-4 rounded-lg shadow-md">
-                            <div className="text-2xl mb-2">📱</div>
-                            <h3 className="text-lg font-bold text-gray-800 mb-1">Akses Dimana Saja</h3>
-                            <p className="text-gray-600 text-sm">Belajar fleksibel melalui aplikasi mobile dan website kapan saja</p>
-                        </div>
-                        <div className="bg-white p-4 rounded-lg shadow-md">
-                            <div className="text-2xl mb-2">📊</div>
-                            <h3 className="text-lg font-bold text-gray-800 mb-1">Progress Tracking</h3>
-                            <p className="text-gray-600 text-sm">Pantau perkembangan belajar dengan laporan yang detail dan akurat</p>
-                        </div>
+                {/* Features */}
+                <div>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-4">Mengapa Memilih AJARIN?</h2>
+                    <div className="grid grid-cols-1 gap-4">
+                        {features.map((feature, index) => {
+                            const IconComponent = feature.icon;
+                            return (
+                                <div key={index} className="bg-white p-4 rounded-lg shadow-sm border">
+                                    <div className="flex items-start space-x-3">
+                                        <div className={`w-12 h-12 rounded-lg ${feature.color} flex items-center justify-center flex-shrink-0`}>
+                                            <IconComponent size={24} />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-semibold text-gray-900 mb-2">{feature.title}</h3>
+                                            <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
 
-                <div className="team-section mb-6">
-                    <h2 className="text-lg font-bold text-gray-800 mb-3 text-center">Tim Kami</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {team.map((member, index) => (
-                            <div key={index} className="bg-white p-3 rounded-lg shadow-md text-center">
-                                <img src={member.image} alt={member.name} className="w-16 h-16 rounded-full mx-auto mb-2" />
-                                <h3 className="font-bold text-gray-800 text-sm">{member.name}</h3>
-                                <p className="text-blue-600 text-xs">{member.role}</p>
-                            </div>
-                        ))}
+                {/* Contact CTA */}
+                <div className="bg-white p-6 rounded-lg shadow-sm border text-center">
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <MessageCircle size={24} className="text-green-600" />
                     </div>
-                </div>
-
-                <div className="contact-cta bg-gradient-to-r from-green-500 to-teal-600 p-4 rounded-xl text-white text-center">
-                    <h2 className="text-lg font-bold mb-2">Punya Pertanyaan?</h2>
-                    <p className="text-green-100 text-sm mb-4">Hubungi kami untuk informasi lebih lanjut tentang AJARIN</p>
-                    <button className="bg-white text-green-600 px-4 py-2 rounded-full font-bold text-sm hover:bg-gray-100 transition-colors">
+                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Punya Pertanyaan?</h2>
+                    <p className="text-gray-600 text-sm mb-4">Hubungi kami untuk informasi lebih lanjut tentang AJARIN</p>
+                    <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
                         Hubungi Kami
                     </button>
                 </div>
-            </SafeArea>
-        </>
+            </div>
+        </SafeArea>
     )
 }
