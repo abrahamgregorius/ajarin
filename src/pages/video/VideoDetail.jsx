@@ -1,20 +1,22 @@
 import SafeArea from "../../components/SafeArea";
 import StreakCoinDisplay from "../../components/StreakCoinDisplay";
 import { useParams, Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { db } from "../../lib";
-import { GraduationCap, ArrowLeft, Play, Clock, CheckCircle, AlertCircle, Bookmark, Flag } from 'lucide-react';
+import { useUserProgress } from '../../hooks/useUserProgress';
+import { GraduationCap, ArrowLeft, Play, Clock, CheckCircle, AlertCircle, Bookmark, Flag, Award } from 'lucide-react';
 
 export default function VideoDetail() {
     const { videoId } = useParams();
     const [video, setVideo] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [watchTime, setWatchTime] = useState(0);
+    const [hasCompleted, setHasCompleted] = useState(false);
+    const videoRef = useRef(null);
 
-    // User progress state
-    const [streak, setStreak] = useState(7);
-    const [coins, setCoins] = useState(1250);
-    const [hasCompletedToday, setHasCompletedToday] = useState(true);
+    // Use the user progress hook
+    const { streak, coins, hasCompletedToday, completeDailyTask, addStudyHours } = useUserProgress();
 
     useEffect(() => {
         const fetchVideo = async () => {
@@ -44,6 +46,62 @@ export default function VideoDetail() {
 
         fetchVideo();
     }, [videoId]);
+
+    // Track video watching time
+    useEffect(() => {
+        const videoElement = videoRef.current;
+        if (!videoElement) return;
+
+        let watchInterval;
+        let startTime = Date.now();
+
+        const handlePlay = () => {
+            startTime = Date.now();
+            watchInterval = setInterval(() => {
+                const currentTime = (Date.now() - startTime) / 1000 / 60; // Convert to minutes
+                setWatchTime(prev => prev + currentTime);
+                startTime = Date.now();
+            }, 10000); // Update every 10 seconds
+        };
+
+        const handlePause = () => {
+            if (watchInterval) {
+                clearInterval(watchInterval);
+            }
+        };
+
+        const handleEnded = async () => {
+            if (watchInterval) {
+                clearInterval(watchInterval);
+            }
+
+            // Add study hours (convert minutes to hours)
+            const hoursWatched = watchTime / 60;
+            if (hoursWatched > 0.1) { // Minimum 6 minutes to count
+                await addStudyHours(hoursWatched);
+            }
+
+            // Complete daily task and award coins
+            if (!hasCompletedToday) {
+                await completeDailyTask(10);
+            }
+
+            setHasCompleted(true);
+        };
+
+        videoElement.addEventListener('play', handlePlay);
+        videoElement.addEventListener('pause', handlePause);
+        videoElement.addEventListener('ended', handleEnded);
+
+        return () => {
+            if (watchInterval) {
+                clearInterval(watchInterval);
+            }
+            videoElement.removeEventListener('play', handlePlay);
+            videoElement.removeEventListener('pause', handlePause);
+            videoElement.removeEventListener('ended', handleEnded);
+        };
+    }, [videoId, watchTime, hasCompletedToday, addStudyHours, completeDailyTask]);
 
     if (loading) {
         return (
@@ -132,6 +190,7 @@ export default function VideoDetail() {
                 <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-sm">
                     {video.video_url ? (
                         <video
+                            ref={videoRef}
                             src={video.video_url}
                             controls
                             className="w-full h-full object-cover"
@@ -146,13 +205,23 @@ export default function VideoDetail() {
                         </div>
                     )}
                 </div>
+
+                {/* Completion Status */}
+                {hasCompleted && (
+                    <div className="mt-3 bg-green-50 border border-green-200 rounded-lg p-3">
+                        <div className="flex items-center space-x-2">
+                            <Award size={20} className="text-green-600" />
+                            <span className="text-green-700 font-medium">Video selesai! +10 koin</span>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Content Section */}
             <div className="mx-4 mt-4 mb-20">
                 <div className="bg-white rounded-lg p-4 shadow-md">
                     <h2 className="text-lg font-semibold text-gray-900 mb-3">Konten Pelajaran</h2>
-                    <div className="space-y-2">
+                    <div className="space-y-2 mb-4">
                         <div className="flex items-center space-x-2">
                             <CheckCircle size={16} className="text-green-500" />
                             <span className="text-gray-700">Materi pembelajaran interaktif</span>
@@ -164,6 +233,16 @@ export default function VideoDetail() {
                         <div className="flex items-center space-x-2">
                             <CheckCircle size={16} className="text-purple-500" />
                             <span className="text-gray-700">Contoh soal praktis</span>
+                        </div>
+                    </div>
+
+                    {/* Study Rewards Info */}
+                    <div className="bg-blue-50 rounded-lg p-3">
+                        <h3 className="font-medium text-blue-900 mb-2">🎯 Reward Belajar</h3>
+                        <div className="space-y-1 text-sm text-blue-800">
+                            <div>• Selesaikan video: +10 koin</div>
+                            <div>• Waktu menonton akan ditambahkan ke jam belajar</div>
+                            <div>• Jam belajar mempengaruhi ranking</div>
                         </div>
                     </div>
                 </div>

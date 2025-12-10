@@ -1,6 +1,6 @@
 import SafeArea from "../components/SafeArea";
 import StreakCoinDisplay from "../components/StreakCoinDisplay";
-import { GraduationCap, User, Settings, LogOut, ChevronRight, CircleUser } from 'lucide-react';
+import { GraduationCap, User, Settings, LogOut, ChevronRight, CircleUser, Bookmark, BookMarked } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -117,7 +117,7 @@ export default function Profile() {
                 <div className="bg-white rounded-xl p-6 shadow-sm">
                     <div className="flex items-center space-x-4">
                         {/* <img src={user.avatar} alt={user.name} className="w-16 h-16 rounded-full" /> */}
-                        <CircleUser className="w-16 h-16 rounded-full"></CircleUser>
+                        <BookMarked className="w-16 h-16"></BookMarked>
                         <div className="flex-1">
                             <h2 className="text-lg font-semibold text-gray-900">{user.name}</h2>
                             <p className="text-gray-600 text-sm">{user.email}</p>

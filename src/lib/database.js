@@ -87,3 +87,112 @@ export async function updateUserProfile(userId, updates) {
         });
     return { data, error };
 }
+
+// Shop functions
+export async function getShopItems() {
+    const { data, error } = await supabase
+        .from("shop_items")
+        .select("*")
+        .eq("is_active", true)
+        .order("price");
+    return { data, error };
+}
+
+export async function getUserPurchases(userId) {
+    const { data, error } = await supabase
+        .from("user_purchases")
+        .select(`
+            *,
+            shop_items (*)
+        `)
+        .eq("user_id", userId);
+    return { data, error };
+}
+
+export async function purchaseItem(userId, itemId) {
+    // First check if user already owns this item
+    const { data: existingPurchase } = await supabase
+        .from("user_purchases")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("item_id", itemId)
+        .single();
+
+    if (existingPurchase) {
+        throw new Error("Item sudah dimiliki");
+    }
+
+    // Get item price
+    const { data: item, error: itemError } = await supabase
+        .from("shop_items")
+        .select("price")
+        .eq("id", itemId)
+        .single();
+
+    if (itemError || !item) {
+        throw new Error("Item tidak ditemukan");
+    }
+
+    // Get user coins
+    const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("coins")
+        .eq("id", userId)
+        .single();
+
+    if (profileError || !profile) {
+        throw new Error("Profile tidak ditemukan");
+    }
+
+    if (profile.coins < item.price) {
+        throw new Error("Koin tidak cukup");
+    }
+
+    // Deduct coins and create purchase in a transaction
+    const { data, error } = await supabase.rpc('purchase_item', {
+        p_user_id: userId,
+        p_item_id: itemId,
+        p_price: item.price
+    });
+
+    return { data, error };
+}
+
+// Ranking functions
+export async function getRanking(limit = 50) {
+    const { data, error } = await supabase
+        .from("profiles")
+        .select("id, full_name, study_hours, grade, school, streak, coins")
+        .order("study_hours", { ascending: false })
+        .limit(limit);
+    return { data, error };
+}
+
+export async function getUserRanking(userId) {
+    // Get user's study hours
+    const { data: userProfile, error: userError } = await supabase
+        .from("profiles")
+        .select("study_hours")
+        .eq("id", userId)
+        .single();
+
+    if (userError || !userProfile) {
+        return { data: null, error: userError };
+    }
+
+    // Count how many users have more study hours
+    const { count, error } = await supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true })
+        .gt("study_hours", userProfile.study_hours);
+
+    return { data: { rank: (count || 0) + 1, study_hours: userProfile.study_hours }, error };
+}
+
+export async function updateStudyHours(userId, additionalHours) {
+    const { data, error } = await supabase.rpc('increment_study_hours', {
+        p_user_id: userId,
+        p_hours: additionalHours
+    });
+    return { data, error };
+}

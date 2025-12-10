@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom'
 import Beranda from './pages/Beranda'
 import Kelas from './pages/Kelas'
 import Langganan from './pages/Langganan'
+import Ranking from './pages/Ranking'
 import Profil from './pages/Profil'
 import Masuk from './pages/Masuk'
 import Daftar from './pages/Daftar'
@@ -27,7 +28,8 @@ function App() {
       {/* Protected Routes */}
       <Route path="/" element={<ProtectedRoute><Beranda /></ProtectedRoute>} />
       <Route path="/kelas" element={<ProtectedRoute><Kelas /></ProtectedRoute>} />
-      <Route path="/langganan" element={<ProtectedRoute><Langganan /></ProtectedRoute>} />
+      <Route path="/shop" element={<ProtectedRoute><Langganan /></ProtectedRoute>} />
+      <Route path="/ranking" element={<ProtectedRoute><Ranking /></ProtectedRoute>} />
       <Route path="/profil" element={<ProtectedRoute><Profil /></ProtectedRoute>} />
       <Route path="/kelas/:kelasId" element={<ProtectedRoute><KelasDetail /></ProtectedRoute>} />
       <Route path="/kelas/:kelasId/:mapelId" element={<ProtectedRoute><MapelDetail /></ProtectedRoute>} />
