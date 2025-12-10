@@ -5,9 +5,8 @@ import { useState } from 'react';
 
 export default function Jelajahi() {
     // User progress state
-    const [streak, setStreak] = useState(7);
-    const [coins, setCoins] = useState(1250);
-    const [hasCompletedToday, setHasCompletedToday] = useState(true);
+        const { streak, coins, hasCompletedToday, studyHours, userRank } = useUserProgress();
+
 
     const categories = [
         { name: 'Matematika', icon: Calculator, color: 'bg-blue-100 text-blue-600' },

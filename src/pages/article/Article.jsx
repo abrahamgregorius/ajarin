@@ -6,9 +6,8 @@ import SafeArea from '../../components/SafeArea';
 
 export default function Article() {
     // User progress state
-    const [streak, setStreak] = useState(7);
-    const [coins, setCoins] = useState(1250);
-    const [hasCompletedToday, setHasCompletedToday] = useState(true);
+        const { streak, coins, hasCompletedToday, studyHours, userRank } = useUserProgress();
+
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('Semua');
 

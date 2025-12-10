@@ -8,9 +8,8 @@ export default function ArticleDetail() {
     const { articleId } = useParams();
 
     // User progress state
-    const [streak, setStreak] = useState(7);
-    const [coins, setCoins] = useState(1250);
-    const [hasCompletedToday, setHasCompletedToday] = useState(true);
+        const { streak, coins, hasCompletedToday, studyHours, userRank } = useUserProgress();
+
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
 

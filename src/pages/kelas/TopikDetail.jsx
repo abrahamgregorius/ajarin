@@ -4,6 +4,7 @@ import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { db } from "../../lib";
 import { GraduationCap, ArrowLeft, Play, Clock, CheckCircle, AlertCircle, ChevronRight } from 'lucide-react';
+import { useUserProgress } from "../../hooks/useUserProgress";
 
 export default function TopikDetail() {
     const { kelasId, mapelId, materiId, topikId } = useParams();
@@ -12,9 +13,8 @@ export default function TopikDetail() {
     const [error, setError] = useState(null);
 
     // User progress state
-    const [streak, setStreak] = useState(7);
-    const [coins, setCoins] = useState(1250);
-    const [hasCompletedToday, setHasCompletedToday] = useState(true);
+    const { streak, coins, hasCompletedToday, studyHours, userRank } = useUserProgress();
+
 
     useEffect(() => {
         const fetchVideos = async () => {

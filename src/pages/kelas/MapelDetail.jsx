@@ -4,6 +4,7 @@ import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { db, supabase } from "../../lib";
 import { GraduationCap, ArrowLeft, BookOpen, Calculator, Globe, ChevronRight, FlaskConical } from 'lucide-react';
+import { useUserProgress } from "../../hooks/useUserProgress";
 
 export default function MapelDetail() {
     const { kelasId, mapelId } = useParams();
@@ -12,9 +13,8 @@ export default function MapelDetail() {
     const [error, setError] = useState(null);
 
     // User progress state
-    const [streak, setStreak] = useState(7);
-    const [coins, setCoins] = useState(1250);
-    const [hasCompletedToday, setHasCompletedToday] = useState(true);
+    const { streak, coins, hasCompletedToday, studyHours, userRank } = useUserProgress();
+
 
     useEffect(() => {
         const fetchMaterials = async () => {
