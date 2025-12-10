@@ -2,7 +2,7 @@ import SafeArea from "../../components/SafeArea";
 import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { db, supabase } from "../../lib";
-import { GraduationCap, ArrowLeft, BookOpen, Calculator, Globe, ChevronRight } from 'lucide-react';
+import { GraduationCap, ArrowLeft, BookOpen, Calculator, Globe, ChevronRight, FlaskConical } from 'lucide-react';
 
 export default function MapelDetail() {
     const { kelasId, mapelId } = useParams();
@@ -60,6 +60,7 @@ export default function MapelDetail() {
     const subjectIcons = {
         'Matematika': Calculator,
         'Bahasa Indonesia': BookOpen,
+        'IPA': FlaskConical,
         'IPS': Globe
     };
 
