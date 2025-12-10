@@ -74,11 +74,16 @@ export async function getUserProfile(userId) {
     return { data, error };
 }
 
-// Update user profile
+// Update user profile (upsert - create if doesn't exist, update if exists)
 export async function updateUserProfile(userId, updates) {
     const { data, error } = await supabase
         .from("profiles")
-        .update(updates)
-        .eq("id", userId);
+        .upsert({
+            id: userId,
+            ...updates,
+            updated_at: new Date().toISOString()
+        }, {
+            onConflict: 'id'
+        });
     return { data, error };
 }

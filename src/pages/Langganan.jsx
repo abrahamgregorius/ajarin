@@ -1,9 +1,12 @@
 import SafeArea from "../components/SafeArea";
+import StreakCoinDisplay from "../components/StreakCoinDisplay";
 import { GraduationCap, Check, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
+import { useUserProgress } from '../hooks/useUserProgress';
 
 export default function Subscription() {
     const [selectedPlan, setSelectedPlan] = useState('Gratis');
+    const { streak, coins, hasCompletedToday } = useUserProgress();
 
     const plans = [
         {
@@ -30,6 +33,11 @@ export default function Subscription() {
                         <GraduationCap size={28} className="text-blue-600" />
                         <h1 className="text-xl font-bold text-gray-900">Langganan</h1>
                     </div>
+                    <StreakCoinDisplay
+                        streak={streak}
+                        coins={coins}
+                        hasCompletedToday={hasCompletedToday}
+                    />
                 </div>
             </div>
 

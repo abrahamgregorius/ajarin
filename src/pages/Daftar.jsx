@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, GraduationCap } from 'lucide-react';
 import SafeArea from '../components/SafeArea';
+import { useAuth } from '../contexts/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Register() {
+    const { register } = useAuth();
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -21,22 +25,33 @@ export default function Register() {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (formData.password !== formData.confirmPassword) {
             alert('Password tidak cocok!');
             return;
         }
-        // Handle register logic here
-        console.log('Register attempt:', formData);
+
+        try {
+            await register({
+                name: formData.name,
+                email: formData.email,
+                password: formData.password,
+                grade: formData.grade,
+                school: formData.school
+            });
+            navigate('/');
+        } catch (error) {
+            alert(error.message || 'Pendaftaran gagal. Silakan coba lagi.');
+        }
     };
 
     return (
         <SafeArea className="bg-gray-50 min-h-screen">
             {/* Top App Bar */}
             <div className="bg-white shadow-sm border-b">
-                <div className="px-4 py-3 flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
+                <div className="px-4 py-3 flex items-center justify-center">
+                    <div className="flex items-center space-x-2">
                         <GraduationCap size={28} className="text-blue-600" />
                         <h1 className="text-xl font-bold text-gray-900">AJARIN</h1>
                     </div>
@@ -197,10 +212,10 @@ export default function Register() {
                     </form>
 
                     <div className="mt-6 text-center">
-                        <p className="text-gray-600 text-sm">Sudah punya akun? <a href="#" className="text-blue-600 font-medium hover:text-blue-800">Masuk di sini</a></p>
+                        <p className="text-gray-600 text-sm">Sudah punya akun? <Link to="/masuk" className="text-blue-600 font-medium hover:text-blue-800">Masuk di sini</Link></p>
                     </div>
 
-                    <div className="mt-6">
+                    {/* <div className="mt-6">
                         <div className="relative">
                             <div className="absolute inset-0 flex items-center">
                                 <div className="w-full border-t border-gray-300"></div>
@@ -228,7 +243,7 @@ export default function Register() {
                                 Twitter
                             </button>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </SafeArea>

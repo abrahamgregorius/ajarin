@@ -1,6 +1,10 @@
 import MobileNav from "./MobileNav";
+import { useLocation } from 'react-router-dom';
 
 export default function SafeArea({ children, className }) {
+    const location = useLocation();
+    const isAuthPage = location.pathname === '/masuk' || location.pathname === '/daftar';
+
     return (
         <>
             <div className="w-full min-h-screen bg-blue-950">
@@ -8,7 +12,7 @@ export default function SafeArea({ children, className }) {
                     <div className={`min-h-screen ${className ?? ""}`}>
                         {children}
                     </div>
-                    <MobileNav></MobileNav>
+                    {!isAuthPage && <MobileNav />}
                 </div>
             </div>
         </>

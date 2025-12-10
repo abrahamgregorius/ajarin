@@ -1,7 +1,14 @@
 import SafeArea from '../components/SafeArea';
+import StreakCoinDisplay from '../components/StreakCoinDisplay';
 import { GraduationCap, Search, BookOpen, Calculator, Globe, Palette } from 'lucide-react';
+import { useState } from 'react';
 
 export default function Jelajahi() {
+    // User progress state
+    const [streak, setStreak] = useState(7);
+    const [coins, setCoins] = useState(1250);
+    const [hasCompletedToday, setHasCompletedToday] = useState(true);
+
     const categories = [
         { name: 'Matematika', icon: Calculator, color: 'bg-blue-100 text-blue-600' },
         { name: 'Bahasa Indonesia', icon: BookOpen, color: 'bg-green-100 text-green-600' },
@@ -18,6 +25,11 @@ export default function Jelajahi() {
                         <GraduationCap size={28} className="text-blue-600" />
                         <h1 className="text-xl font-bold text-gray-900">AJARIN</h1>
                     </div>
+                    <StreakCoinDisplay
+                        streak={streak}
+                        coins={coins}
+                        hasCompletedToday={hasCompletedToday}
+                    />
                 </div>
             </div>
 

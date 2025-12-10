@@ -1,10 +1,13 @@
 import SafeArea from "../components/SafeArea";
+import StreakCoinDisplay from "../components/StreakCoinDisplay";
 import { GraduationCap, ChevronDown, Gift, Monitor, Target, Users } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useUserProgress } from '../hooks/useUserProgress';
 
 export default function Kelas() {
     const [selectedLevel, setSelectedLevel] = useState('SD');
+    const { streak, coins, hasCompletedToday } = useUserProgress();
 
     const gradeLevels = {
         SD: [
@@ -43,6 +46,11 @@ export default function Kelas() {
                         <GraduationCap size={28} className="text-blue-600" />
                         <h1 className="text-xl font-bold text-gray-900">Pilih Kelas</h1>
                     </div>
+                    <StreakCoinDisplay
+                        streak={streak}
+                        coins={coins}
+                        hasCompletedToday={hasCompletedToday}
+                    />
                 </div>
             </div>
 

@@ -1,4 +1,5 @@
 import SafeArea from "../../components/SafeArea";
+import StreakCoinDisplay from "../../components/StreakCoinDisplay";
 import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { db } from "../../lib";
@@ -9,6 +10,11 @@ export default function TopikDetail() {
     const [videoList, setVideoList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    // User progress state
+    const [streak, setStreak] = useState(7);
+    const [coins, setCoins] = useState(1250);
+    const [hasCompletedToday, setHasCompletedToday] = useState(true);
 
     useEffect(() => {
         const fetchVideos = async () => {
@@ -67,6 +73,7 @@ export default function TopikDetail() {
                         <GraduationCap size={28} className="text-blue-600" />
                         <h1 className="text-xl font-bold text-gray-900">AJARIN</h1>
                     </div>
+                    <StreakCoinDisplay streak={streak} coins={coins} />
                 </div>
             </div>
 

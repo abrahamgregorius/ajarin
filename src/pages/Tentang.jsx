@@ -1,7 +1,14 @@
 import SafeArea from '../components/SafeArea';
+import StreakCoinDisplay from '../components/StreakCoinDisplay';
 import { GraduationCap, Target, Users, Award, BookOpen, UserCheck, Smartphone, BarChart3, MessageCircle } from 'lucide-react';
+import { useState } from 'react';
 
 export default function About() {
+    // User progress state
+    const [streak, setStreak] = useState(7);
+    const [coins, setCoins] = useState(1250);
+    const [hasCompletedToday, setHasCompletedToday] = useState(true);
+
     const stats = [
         { number: '1M+', label: 'Siswa Terdaftar', icon: Users },
         { number: '10,000+', label: 'Kursus Tersedia', icon: BookOpen },
@@ -45,6 +52,11 @@ export default function About() {
                         <GraduationCap size={28} className="text-blue-600" />
                         <h1 className="text-xl font-bold text-gray-900">AJARIN</h1>
                     </div>
+                    <StreakCoinDisplay
+                        streak={streak}
+                        coins={coins}
+                        hasCompletedToday={hasCompletedToday}
+                    />
                 </div>
             </div>
 

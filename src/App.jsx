@@ -13,37 +13,34 @@ import MapelDetail from './pages/kelas/MapelDetail'
 import MateriDetail from './pages/kelas/MateriDetail'
 import TopikDetail from './pages/kelas/TopikDetail'
 import VideoDetail from './pages/video/VideoDetail'
+import Article from './pages/article/Article'
+import ArticleDetail from './pages/article/ArticleDetail'
+import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
   return (
-    <>
-      <Routes>
-        {/* Home */}
-        <Route path="/" element={<Beranda />} />
+    <Routes>
+      {/* Public Routes */}
+      <Route path="/masuk" element={<Masuk />} />
+      <Route path="/daftar" element={<Daftar />} />
 
-        {/* Authentication */}
-        <Route path="/masuk" element={<Masuk />} />
-        <Route path="/daftar" element={<Daftar />} />
+      {/* Protected Routes */}
+      <Route path="/" element={<ProtectedRoute><Beranda /></ProtectedRoute>} />
+      <Route path="/kelas" element={<ProtectedRoute><Kelas /></ProtectedRoute>} />
+      <Route path="/langganan" element={<ProtectedRoute><Langganan /></ProtectedRoute>} />
+      <Route path="/profil" element={<ProtectedRoute><Profil /></ProtectedRoute>} />
+      <Route path="/kelas/:kelasId" element={<ProtectedRoute><KelasDetail /></ProtectedRoute>} />
+      <Route path="/kelas/:kelasId/:mapelId" element={<ProtectedRoute><MapelDetail /></ProtectedRoute>} />
+      <Route path="/kelas/:kelasId/:mapelId/:materiId" element={<ProtectedRoute><MateriDetail /></ProtectedRoute>} />
+      <Route path="/kelas/:kelasId/:mapelId/:materiId/:topikId" element={<ProtectedRoute><TopikDetail /></ProtectedRoute>} />
+      <Route path="/video/:videoId" element={<ProtectedRoute><VideoDetail /></ProtectedRoute>} />
+      <Route path="/articles/" element={<ProtectedRoute><Article /></ProtectedRoute>} />
+      <Route path="/articles/:articleId" element={<ProtectedRoute><ArticleDetail /></ProtectedRoute>} />
 
-
-        {/* Main menu */}
-        <Route path="/kelas" element={<Kelas />} />
-        <Route path="/langganan" element={<Langganan />} />
-        <Route path="/profil" element={<Profil />} />
-
-        {/* Classes */}
-        <Route path="/kelas/:kelasId" element={<KelasDetail />} />
-        <Route path="/kelas/:kelasId/:mapelId" element={<MapelDetail />} />
-        <Route path="/kelas/:kelasId/:mapelId/:materiId" element={<MateriDetail />} />
-        <Route path="/kelas/:kelasId/:mapelId/:materiId/:topikId" element={<TopikDetail />} />
-        <Route path="/video/:videoId" element={<VideoDetail />} />
-
-
-        {/* Others */}
-        <Route path="/tentang" element={<Tentang />} />
-        <Route path="/kontak" element={<Kontak />} />
-      </Routes>
-    </>
+      {/* Public Routes */}
+      <Route path="/tentang" element={<Tentang />} />
+      <Route path="/kontak" element={<Kontak />} />
+    </Routes>
   )
 }
 
