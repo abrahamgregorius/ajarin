@@ -3,6 +3,7 @@ import { GraduationCap, Search, Clock, ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import SafeArea from '../../components/SafeArea';
+import { useUserProgress } from '../../hooks/useUserProgress';
 
 export default function Article() {
     // User progress state

@@ -2,6 +2,7 @@ import SafeArea from '../components/SafeArea';
 import StreakCoinDisplay from '../components/StreakCoinDisplay';
 import { GraduationCap, Search, BookOpen, Calculator, Globe, Palette } from 'lucide-react';
 import { useState } from 'react';
+import { useUserProgress } from '../hooks/useUserProgress';
 
 export default function Jelajahi() {
     // User progress state

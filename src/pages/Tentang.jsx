@@ -2,6 +2,7 @@ import SafeArea from '../components/SafeArea';
 import StreakCoinDisplay from '../components/StreakCoinDisplay';
 import { GraduationCap, Target, Users, Award, BookOpen, UserCheck, Smartphone, BarChart3, MessageCircle } from 'lucide-react';
 import { useState } from 'react';
+import { useUserProgress } from '../hooks/useUserProgress';
 
 export default function About() {
     // User progress state

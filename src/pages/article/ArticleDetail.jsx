@@ -3,6 +3,7 @@ import { GraduationCap, ArrowLeft, Clock, Share2, Bookmark, Heart } from 'lucide
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import SafeArea from '../../components/SafeArea';
+import { useUserProgress } from '../../hooks/useUserProgress';
 
 export default function ArticleDetail() {
     const { articleId } = useParams();

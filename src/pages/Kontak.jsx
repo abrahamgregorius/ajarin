@@ -2,6 +2,7 @@ import SafeArea from '../components/SafeArea';
 import StreakCoinDisplay from '../components/StreakCoinDisplay';
 import { GraduationCap, Mail, Phone, MapPin, Clock, Send, MessageCircle, Facebook, Instagram, Twitter, Linkedin } from 'lucide-react';
 import { useState } from 'react';
+import { useUserProgress } from '../hooks/useUserProgress';
 
 export default function Contact() {
     // User progress state
