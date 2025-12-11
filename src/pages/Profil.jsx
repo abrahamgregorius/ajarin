@@ -10,7 +10,7 @@ import * as db from '../lib/database';
 export default function Profile() {
     const { user: authUser, logout } = useAuth();
     const navigate = useNavigate();
-    const { streak, coins, hasCompletedToday, loading: progressLoading, completeDailyTask } = useUserProgress();
+    const { streak, coins, hasCompletedToday, loading: progressLoading, completeDailyTask, currentNickname } = useUserProgress();
 
     // Profile data state
     const [profileData, setProfileData] = useState(null);
@@ -119,7 +119,14 @@ export default function Profile() {
                         {/* <img src={user.avatar} alt={user.name} className="w-16 h-16 rounded-full" /> */}
                         <BookMarked className="w-16 h-16"></BookMarked>
                         <div className="flex-1">
-                            <h2 className="text-lg font-semibold text-gray-900">{user.name}</h2>
+                            <div className="flex items-center space-x-2 mb-1">
+                                <h2 className="text-lg font-semibold text-gray-900">{user.name}</h2>
+                                {currentNickname && (
+                                    <span className="inline-flex items-center leading-3.5 pl-4 pr-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-yellow-400 to-orange-500 text-white">
+                                        {currentNickname}
+                                    </span>
+                                )}
+                            </div>
                             <p className="text-gray-600 text-sm">{user.email}</p>
                             <p className="text-gray-600 text-sm">{user.grade} • {user.school}</p>
                         </div>

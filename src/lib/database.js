@@ -162,7 +162,21 @@ export async function purchaseItem(userId, itemId) {
 export async function getRanking(limit = 50) {
     const { data, error } = await supabase
         .from("profiles")
-        .select("id, full_name, study_hours, grade, school, streak, coins")
+        .select(`
+            id, 
+            full_name, 
+            study_hours, 
+            grade, 
+            school, 
+            streak, 
+            coins,
+            user_purchases (
+                shop_items (
+                    type,
+                    data
+                )
+            )
+        `)
         .order("study_hours", { ascending: false })
         .limit(limit);
     return { data, error };

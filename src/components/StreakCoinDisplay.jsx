@@ -16,7 +16,7 @@ export default function StreakCoinDisplay({ streak = 0, coins = 0, hasCompletedT
             {/* Coin Display */}
             <div className="flex items-center space-x-1 bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-medium">
                 <Coins size={16} className="text-yellow-500" />
-                <span>{coins.toLocaleString()}</span>
+                <span>{coins}</span>
             </div>
         </div>
     );
