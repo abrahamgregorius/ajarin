@@ -66,7 +66,7 @@ export default function KelasDetail() {
                         <GraduationCap size={28} className="text-blue-600" />
                         <h1 className="text-xl font-bold text-gray-900">AJARIN</h1>
                     </div>
-                    <StreakCoinDisplay streak={streak} coins={coins} />
+                    <StreakCoinDisplay streak={streak} coins={coins} hasCompletedToday={hasCompletedToday} />
                 </div>
             </div>
 

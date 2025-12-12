@@ -12,13 +12,20 @@ import { GraduationCap, ArrowLeft, Play, Clock, CheckCircle, AlertCircle, Bookma
 export default function VideoDetail() {
     const { videoId } = useParams();
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const [video, setVideo] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [watchTime, setWatchTime] = useState(0);
     const [hasCompleted, setHasCompleted] = useState(false);
     const videoRef = useRef(null);
+
+    // Track minutes watched for coin rewards
+    const [minutesWatched, setMinutesWatched] = useState(0);
+
+    // Video stats and rating state
+    const [videoStats, setVideoStats] = useState({ total_ratings: 0, average_rating: 0, total_comments: 0 });
+    const [userRating, setUserRating] = useState(0);
 
     // Comments state
     const [comments, setComments] = useState([]);
@@ -29,7 +36,43 @@ export default function VideoDetail() {
     const [openDropdownId, setOpenDropdownId] = useState(null);
 
     // Use the user progress hook
-    const { streak, coins, hasCompletedToday, completeDailyTask, addStudyMinutes } = useUserProgress();
+    const { streak, coins, hasCompletedToday, completeDailyTask, addStudyMinutes, updateCoins, addCoins } = useUserProgress();
+
+    const fetchRatingsAndComments = async () => {
+        if (!user) return;
+
+        try {
+            // Add timeout to prevent hanging
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+            // Fetch video stats
+            const { data: statsData } = await db.getVideoStats(videoId);
+            if (statsData) {
+                setVideoStats(statsData);
+            }
+
+            // Fetch user's rating
+            const { data: ratingData } = await db.getUserVideoRating(videoId, user.id);
+            if (ratingData) {
+                setUserRating(ratingData.rating);
+            }
+
+            // Fetch comments
+            const { data: commentsData } = await db.getVideoComments(videoId);
+            if (commentsData) {
+                setComments(commentsData);
+            }
+
+            clearTimeout(timeoutId);
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                console.warn('Ratings and comments fetch timed out');
+            } else {
+                console.error('Error fetching ratings and comments:', error);
+            }
+        }
+    };
 
     // Handle click outside dropdown
     useEffect(() => {
@@ -46,7 +89,14 @@ export default function VideoDetail() {
     useEffect(() => {
         const fetchVideo = async () => {
             try {
+                // Add timeout to video fetching
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+
                 const { data, error } = await db.getVideoById(videoId);
+
+                clearTimeout(timeoutId);
+
                 if (error) throw error;
 
                 if (data) {
@@ -64,7 +114,11 @@ export default function VideoDetail() {
                 }
                 setLoading(false);
             } catch (err) {
-                setError(err.message);
+                if (err.name === 'AbortError') {
+                    setError('Timeout: Video loading took too long');
+                } else {
+                    setError(err.message);
+                }
                 setLoading(false);
             }
         };
@@ -74,32 +128,6 @@ export default function VideoDetail() {
 
     // Fetch ratings and comments data
     useEffect(() => {
-        const fetchRatingsAndComments = async () => {
-            if (!user) return;
-
-            try {
-                // Fetch video stats
-                const { data: statsData } = await db.getVideoStats(videoId);
-                if (statsData) {
-                    setVideoStats(statsData);
-                }
-
-                // Fetch user's rating
-                const { data: ratingData } = await db.getUserVideoRating(videoId, user.id);
-                if (ratingData) {
-                    setUserRating(ratingData.rating);
-                }
-
-                // Fetch comments
-                const { data: commentsData } = await db.getVideoComments(videoId);
-                if (commentsData) {
-                    setComments(commentsData);
-                }
-            } catch (error) {
-                console.error('Error fetching ratings and comments:', error);
-            }
-        };
-
         fetchRatingsAndComments();
 
         // Set up real-time subscription for comments
@@ -247,6 +275,21 @@ export default function VideoDetail() {
                     if (!document.hidden) {
                         const currentTime = (Date.now() - startTime) / 1000 / 60; // Convert to minutes
                         setWatchTime(prev => prev + currentTime);
+
+                        // Track minutes for coin rewards
+                        setMinutesWatched(prev => {
+                            const newMinutes = prev + currentTime;
+                            const fullMinutes = Math.floor(newMinutes);
+
+                            // Award 10 coins for every full minute watched
+                            if (fullMinutes > 0) {
+                                addCoins(fullMinutes * 10);
+                                console.log(`🪙 Awarded ${fullMinutes * 10} coins for ${fullMinutes} minute(s) of watching`);
+                            }
+
+                            return newMinutes - fullMinutes; // Keep remainder
+                        });
+
                         startTime = Date.now();
                     }
                 }, 10000); // Update every 10 seconds
@@ -281,6 +324,17 @@ export default function VideoDetail() {
                         await addStudyMinutes(watchTime);
                     } catch (error) {
                         console.error('Error saving study time on unload:', error);
+                    }
+                }
+
+                // Award coins for any remaining minutes watched
+                if (minutesWatched >= 1.0) {
+                    try {
+                        const fullMinutes = Math.floor(minutesWatched);
+                        await addCoins(fullMinutes * 10);
+                        console.log(`🪙 Awarded ${fullMinutes * 10} coins for remaining ${fullMinutes} minute(s) on page leave`);
+                    } catch (error) {
+                        console.error('Error awarding coins on unload:', error);
                     }
                 }
             };
@@ -327,6 +381,21 @@ export default function VideoDetail() {
                 watchInterval = setInterval(() => {
                     const currentTime = (Date.now() - startTime) / 1000 / 60; // Convert to minutes
                     setWatchTime(prev => prev + currentTime);
+
+                    // Track minutes for coin rewards
+                    setMinutesWatched(prev => {
+                        const newMinutes = prev + currentTime;
+                        const fullMinutes = Math.floor(newMinutes);
+
+                        // Award 10 coins for every full minute watched
+                        if (fullMinutes > 0) {
+                            addCoins(fullMinutes * 10);
+                            console.log(`🪙 Awarded ${fullMinutes * 10} coins for ${fullMinutes} minute(s) of watching`);
+                        }
+
+                        return newMinutes - fullMinutes; // Keep remainder
+                    });
+
                     startTime = Date.now();
                 }, 10000); // Update every 10 seconds
             };
@@ -345,6 +414,13 @@ export default function VideoDetail() {
                 // Add study minutes (watchTime is already in minutes)
                 if (watchTime > 0.1) { // Minimum 6 seconds to count
                     await addStudyMinutes(watchTime);
+                }
+
+                // Award coins for any remaining minutes watched
+                if (minutesWatched >= 1.0) {
+                    const fullMinutes = Math.floor(minutesWatched);
+                    await addCoins(fullMinutes * 10);
+                    console.log(`🪙 Awarded ${fullMinutes * 10} coins for remaining ${fullMinutes} minute(s) on video end`);
                 }
 
                 // Complete daily task and award coins
@@ -368,7 +444,7 @@ export default function VideoDetail() {
                 videoElement.removeEventListener('ended', handleEnded);
             };
         }
-    }, [videoId, watchTime, hasCompletedToday, addStudyMinutes, completeDailyTask, video]);
+    }, [videoId, watchTime, hasCompletedToday, addStudyMinutes, completeDailyTask, video, addCoins]);
 
     // Handle rating submission
     const handleRating = async (rating) => {
@@ -383,7 +459,9 @@ export default function VideoDetail() {
             // Primary: Manual refresh for reliability
             console.log('🔄 Primary: Manual refresh stats');
             const { data: statsData } = await db.getVideoStats(videoId);
-            if (statsData) setVideoStats(statsData);
+            if (statsData) {
+                setVideoStats(statsData);
+            }
 
         } catch (error) {
             console.error('❌ Error submitting rating:', error);
@@ -407,8 +485,12 @@ export default function VideoDetail() {
             console.log('🔄 Primary: Manual refresh comments and stats');
             const { data: commentsData } = await db.getVideoComments(videoId);
             const { data: statsData } = await db.getVideoStats(videoId);
-            if (commentsData) setComments(commentsData);
-            if (statsData) setVideoStats(statsData);
+            if (commentsData) {
+                setComments(commentsData);
+            }
+            if (statsData) {
+                setVideoStats(statsData);
+            }
 
         } catch (error) {
             console.error('❌ Error submitting comment:', error);
@@ -429,19 +511,45 @@ export default function VideoDetail() {
             console.log('🔄 Primary: Manual refresh comments and stats');
             const { data: commentsData } = await db.getVideoComments(videoId);
             const { data: statsData } = await db.getVideoStats(videoId);
-            if (commentsData) setComments(commentsData);
-            if (statsData) setVideoStats(statsData);
+            if (commentsData) {
+                setComments(commentsData);
+            }
+            if (statsData) {
+                setVideoStats(statsData);
+            }
 
         } catch (error) {
             console.error('❌ Error deleting comment:', error);
         }
     };
 
-    if (loading) {
+    if (authLoading || loading) {
         return (
             <SafeArea className="bg-gray-50 min-h-screen">
                 <div className="flex items-center justify-center min-h-screen">
                     <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full"></div>
+                </div>
+            </SafeArea>
+        );
+    }
+
+    if (!user) {
+        return (
+            <SafeArea className="bg-gray-50 min-h-screen">
+                <div className="flex items-center justify-center min-h-screen">
+                    <div className="text-center">
+                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span className="text-2xl">🔒</span>
+                        </div>
+                        <p className="text-gray-600 font-medium">Silakan login untuk melihat video</p>
+                        <p className="text-gray-500 text-sm mt-2">Anda perlu masuk ke akun untuk mengakses konten pembelajaran</p>
+                        <button
+                            onClick={() => navigate('/masuk')}
+                            className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700"
+                        >
+                            Masuk
+                        </button>
+                    </div>
                 </div>
             </SafeArea>
         );
@@ -491,7 +599,7 @@ export default function VideoDetail() {
                         <GraduationCap size={28} className="text-blue-600" />
                         <h1 className="text-xl font-bold text-gray-900">AJARIN</h1>
                     </div>
-                    <StreakCoinDisplay streak={streak} coins={coins} />
+                    <StreakCoinDisplay streak={streak} coins={coins} hasCompletedToday={hasCompletedToday} />
                 </div>
             </div>
 
@@ -570,7 +678,7 @@ export default function VideoDetail() {
                     <div className="mt-3 bg-green-50 border border-green-200 rounded-lg p-3">
                         <div className="flex items-center space-x-2">
                             <Award size={20} className="text-green-600" />
-                            <span className="text-green-700 font-medium">Video selesai! +10 koin</span>
+                            <span className="text-green-700 font-medium">Video selesai! +10 koin bonus harian</span>
                         </div>
                     </div>
                 )}
@@ -586,6 +694,14 @@ export default function VideoDetail() {
                                 onClick={async () => {
                                     if (watchTime > 0.1) {
                                         await addStudyMinutes(watchTime);
+
+                                        // Award coins for any remaining minutes watched
+                                        if (minutesWatched >= 1.0) {
+                                            const fullMinutes = Math.floor(minutesWatched);
+                                            await addCoins(fullMinutes * 10);
+                                            console.log(`🪙 Awarded ${fullMinutes * 10} coins for ${fullMinutes} minute(s) on manual completion`);
+                                        }
+
                                         await completeDailyTask(10);
                                         setHasCompleted(true);
                                     }
@@ -596,11 +712,11 @@ export default function VideoDetail() {
                             </button>
                         </div>
                         <p className="text-blue-600 text-sm mt-1">
-                            Waktu menonton tercatat otomatis. Klik "Selesai Menonton" untuk mendapatkan reward!
+                            Dapatkan 10 koin setiap menit menonton! Waktu menonton tercatat otomatis.
                         </p>
                         {watchTime > 0 && (
                             <p className="text-blue-600 text-xs mt-1">
-                                Waktu menonton: {Math.round(watchTime * 10) / 10} menit
+                                Waktu menonton: {Math.round(watchTime * 10) / 10} menit • Koin didapat: {Math.floor(minutesWatched) * 10}
                             </p>
                         )}
                     </div>
@@ -631,9 +747,9 @@ export default function VideoDetail() {
                                 >
                                     <Star
                                         size={24}
-                                        className={`${star <= userRating
-                                                ? 'text-yellow-400 fill-current'
-                                                : 'text-gray-300'
+                                        className={`${star <= (userRating || 0)
+                                            ? 'text-yellow-400 fill-current'
+                                            : 'text-gray-300'
                                             }`}
                                     />
                                 </button>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import * as db from '../lib/database';
 
@@ -12,6 +12,7 @@ export function useUserProgress() {
   const [purchasedItems, setPurchasedItems] = useState([]);
   const [hasCompletedToday, setHasCompletedToday] = useState(false);
   const [loading, setLoading] = useState(true);
+  const lastUserIdRef = useRef(null); // Prevent unnecessary re-loads
 
   // Load user progress data
   useEffect(() => {
@@ -20,6 +21,14 @@ export function useUserProgress() {
         setLoading(false);
         return;
       }
+
+      // Skip if we already loaded this user's data
+      if (lastUserIdRef.current === authUser.id) {
+        setLoading(false);
+        return;
+      }
+
+      lastUserIdRef.current = authUser.id;
 
       try {
         // Wrap everything in a broad try-catch to prevent page crashes
@@ -84,6 +93,21 @@ export function useUserProgress() {
     loadUserProgress();
   }, [authUser?.id]);
 
+  // Reset data when user changes
+  useEffect(() => {
+    if (!authUser?.id) {
+      lastUserIdRef.current = null;
+      setStreak(0);
+      setCoins(0);
+      setStudyHours(0);
+      setCurrentNickname(null);
+      setUserRank(null);
+      setPurchasedItems([]);
+      setHasCompletedToday(false);
+      setLoading(true);
+    }
+  }, [authUser?.id]);
+
   // Function to update streak in database
   const updateStreak = async (newStreak) => {
     if (!authUser?.id) return;
@@ -109,6 +133,23 @@ export function useUserProgress() {
       setCoins(newCoins);
     } catch (error) {
       console.error('Error updating coins:', error);
+    }
+  };
+
+  // Function to add coins (incremental update)
+  const addCoins = async (amount) => {
+    if (!authUser?.id || amount <= 0) return;
+
+    try {
+      // Get current coins from database to avoid stale state issues
+      const { data: profile } = await db.getUserProfile(authUser.id);
+      if (profile) {
+        const newCoins = (profile.coins || 0) + amount;
+        await db.updateUserProfile(authUser.id, { coins: newCoins });
+        setCoins(newCoins);
+      }
+    } catch (error) {
+      console.error('Error adding coins:', error);
     }
   };
 
@@ -199,6 +240,7 @@ export function useUserProgress() {
     loading,
     updateStreak,
     updateCoins,
+    addCoins,
     completeDailyTask,
     spendCoins,
     addStudyMinutes,

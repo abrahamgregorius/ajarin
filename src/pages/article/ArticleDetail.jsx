@@ -230,7 +230,7 @@ export default function ArticleDetail() {
                             <span className="text-lg font-semibold text-gray-900">Artikel</span>
                         </div>
                     </div>
-                    <StreakCoinDisplay streak={streak} coins={coins} />
+                    <StreakCoinDisplay streak={streak} coins={coins} hasCompletedToday={hasCompletedToday} />
                 </div>
             </div>
 
