@@ -161,7 +161,7 @@ export function useUserProgress() {
     const newCoins = coins + coinReward;
 
     await updateStreak(newStreak);
-    await updateCoins(newCoins);
+    await updateCoinsnewCoins);
 
     return true; // Task completed successfully
   };
