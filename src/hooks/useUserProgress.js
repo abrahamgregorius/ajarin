@@ -115,20 +115,20 @@ export function useUserProgress() {
         return true; // Coins spent successfully
     };
 
-    // Function to update study hours
-    const addStudyHours = async (hours) => {
+    // Function to update study minutes
+    const addStudyMinutes = async (minutes) => {
         if (!authUser?.id) return;
 
         try {
-            await db.updateStudyHours(authUser.id, hours);
-            setStudyHours(prev => prev + hours);
-            // Refresh ranking after updating hours
+            await db.updateStudyMinutes(authUser.id, minutes);
+            setStudyHours(prev => prev + (minutes / 60.0)); // Convert minutes to hours for display
+            // Refresh ranking after updating minutes
             const { data: rankingData } = await db.getUserRanking(authUser.id);
             if (rankingData) {
                 setUserRank(rankingData);
             }
         } catch (error) {
-            console.error('Error updating study hours:', error);
+            console.error('Error updating study minutes:', error);
         }
     };
 
@@ -183,7 +183,7 @@ export function useUserProgress() {
         updateCoins,
         completeDailyTask,
         spendCoins,
-        addStudyHours,
+        addStudyMinutes,
         purchaseItem,
         ownsItem
     };
