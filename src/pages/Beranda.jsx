@@ -178,9 +178,9 @@ export default function Home() {
                         <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg text-center">
                             <Award size={24} className="text-green-600 mx-auto mb-2" />
                             <p className="text-sm font-medium text-gray-900">
-                                {highlightsLoading ? '...' : `${todaysHighlights.totalStudyHours} jam`}
+                                {highlightsLoading ? '...' : `${todaysHighlights.totalStudyHours * 60} menit`}
                             </p>
-                            <p className="text-xs text-gray-600">Total jam belajar</p>
+                            <p className="text-xs text-gray-600">Total menit belajar</p>
                         </div>
                     </div>
                     <div className="mt-4 pt-4 border-t border-gray-100">

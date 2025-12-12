@@ -1,6 +1,6 @@
 import SafeArea from "../components/SafeArea";
 import StreakCoinDisplay from "../components/StreakCoinDisplay";
-import { GraduationCap, User, Settings, LogOut, ChevronRight, CircleUser, Bookmark, BookMarked } from 'lucide-react';
+import { GraduationCap, User, Settings, LogOut, ChevronRight, CircleUser, Bookmark } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +15,11 @@ export default function Profile() {
     // Profile data state
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [userStats, setUserStats] = useState({
+        totalHours: 0,
+        completedVideos: 0
+    });
+    const [statsLoading, setStatsLoading] = useState(false);
 
     // Load profile data on component mount
     useEffect(() => {
@@ -22,15 +27,33 @@ export default function Profile() {
             if (!authUser?.id) return;
 
             try {
-                const { data: profile, error } = await db.getUserProfile(authUser.id);
+                setLoading(true);
+                setStatsLoading(true);
 
+                // Load profile data
+                const { data: profile, error: profileError } = await db.getUserProfile(authUser.id);
                 if (profile) {
                     setProfileData(profile);
                 }
+
+                // Load user statistics
+                const { data: stats, error: statsError } = await db.getUserStatistics(authUser.id);
+                if (stats) {
+                    setUserStats(stats);
+                }
+
+                if (profileError) {
+                    console.error('Error loading profile:', profileError);
+                }
+                if (statsError) {
+                    console.error('Error loading statistics:', statsError);
+                }
+
             } catch (error) {
-                console.error('Error loading profile:', error);
+                console.error('Error loading data:', error);
             } finally {
                 setLoading(false);
+                setStatsLoading(false);
             }
         };
 
@@ -44,8 +67,8 @@ export default function Profile() {
         school: profileData?.school || authUser?.school || 'Sekolah belum diatur',
         avatar: profileData?.avatar_url || authUser?.avatar || 'https://via.placeholder.com/120/4ECDC4/FFFFFF?text=U',
         joinDate: 'Januari 2024', // This could also be stored in profile
-        completedCourses: 24, // This could be calculated from user activity
-        totalHours: 156 // This could be calculated from user activity
+        completedCourses: userStats.completedVideos,
+        totalHours: userStats.totalHours
     };
 
     const handleMenuClick = (action) => {
@@ -116,8 +139,14 @@ export default function Profile() {
                 {/* Profile Info */}
                 <div className="bg-white rounded-xl p-6 shadow-sm">
                     <div className="flex items-center space-x-4">
-                        {/* <img src={user.avatar} alt={user.name} className="w-16 h-16 rounded-full" /> */}
-                        <BookMarked className="w-16 h-16"></BookMarked>
+                        <div className="relative">
+                            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
+                                <CircleUser size={32} className="text-white" />
+                            </div>
+                            <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                                <div className="w-2 h-2 bg-white rounded-full"></div>
+                            </div>
+                        </div>
                         <div className="flex-1">
                             <div className="flex items-center space-x-2 mb-1">
                                 <h2 className="text-lg font-semibold text-gray-900">{user.name}</h2>
@@ -138,12 +167,16 @@ export default function Profile() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Statistik</h3>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-blue-600">{user.completedCourses}</div>
+                            <div className={`text-2xl font-bold text-blue-600 ${statsLoading ? 'animate-pulse' : ''}`}>
+                                {statsLoading ? '...' : user.completedCourses}
+                            </div>
                             <div className="text-sm text-gray-600">Video Selesai</div>
                         </div>
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-blue-600">{user.totalHours}</div>
-                            <div className="text-sm text-gray-600">Jam Belajar</div>
+                            <div className={`text-2xl font-bold text-blue-600 ${statsLoading ? 'animate-pulse' : ''}`}>
+                                {statsLoading ? '...' : user.totalHours}
+                            </div>
+                            <div className="text-sm text-gray-600">Menit Belajar</div>
                         </div>
                     </div>
                 </div>

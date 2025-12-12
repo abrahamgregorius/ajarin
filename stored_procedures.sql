@@ -37,12 +37,12 @@ EXCEPTION
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Function to increment study hours
-CREATE OR REPLACE FUNCTION increment_study_hours(p_user_id uuid, p_hours numeric)
+-- Function to increment study minutes (changed from hours)
+CREATE OR REPLACE FUNCTION increment_study_minutes(p_user_id uuid, p_minutes numeric)
 RETURNS void AS $$
 BEGIN
     UPDATE public.profiles
-    SET study_hours = COALESCE(study_hours, 0) + p_hours, updated_at = now()
+    SET study_hours = COALESCE(study_hours, 0) + (p_minutes / 60.0), updated_at = now()
     WHERE id = p_user_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

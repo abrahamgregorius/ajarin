@@ -49,7 +49,8 @@ export default function Ranking() {
     };
 
     const formatStudyHours = (hours) => {
-        return hours ? `${hours.toFixed(1)} jam` : '0 jam';
+        const minutes = hours * 60; // Convert hours to minutes
+        return minutes ? `${minutes.toFixed(1)} menit` : '0 menit';
     };
 
     const getUserNickname = (ranker) => {
@@ -94,7 +95,7 @@ export default function Ranking() {
                                     <Clock size={16} className="opacity-75" />
                                     <span className="font-medium">{formatStudyHours(userRank.study_hours)}</span>
                                 </div>
-                                <p className="text-xs opacity-75">Total jam belajar</p>
+                                <p className="text-xs opacity-75">Total menit belajar</p>
                             </div>
                         </div>
                     </div>
@@ -175,7 +176,7 @@ export default function Ranking() {
                 <div className="bg-white rounded-xl shadow-sm">
                     <div className="p-4 border-b border-gray-100">
                         <h2 className="text-lg font-bold text-gray-900">Daftar Ranking</h2>
-                        <p className="text-sm text-gray-600">Berdasarkan total jam belajar</p>
+                        <p className="text-sm text-gray-600">Berdasarkan total menit belajar</p>
                     </div>
 
                     {loading ? (
@@ -245,11 +246,11 @@ export default function Ranking() {
                     <div className="space-y-2 text-sm text-gray-600">
                         <div className="flex items-start space-x-2">
                             <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                            <span>Belajar secara konsisten setiap hari untuk menambah jam belajar</span>
+                            <span>Belajar secara konsisten setiap hari untuk menambah menit belajar</span>
                         </div>
                         <div className="flex items-start space-x-2">
                             <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                            <span>Selesaikan video dan artikel untuk mendapatkan lebih banyak jam</span>
+                            <span>Selesaikan video dan artikel untuk mendapatkan lebih banyak menit</span>
                         </div>
                         <div className="flex items-start space-x-2">
                             <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>

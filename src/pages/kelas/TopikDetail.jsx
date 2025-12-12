@@ -21,7 +21,6 @@ export default function TopikDetail() {
             try {
                 const { data, error } = await db.getVideosByTopic(parseInt(topikId));
                 if (error) throw error;
-
                 setVideoList(data || []);
                 setLoading(false);
             } catch (err) {
