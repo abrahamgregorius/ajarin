@@ -210,3 +210,75 @@ export async function updateStudyHours(userId, additionalHours) {
     });
     return { data, error };
 }
+
+// Get today's highlights statistics
+export async function getTodaysHighlights() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    try {
+        // Get students who studied today (based on profiles updated today)
+        const { count: activeStudents, error: studentsError } = await supabase
+            .from("profiles")
+            .select("*", { count: "exact", head: true })
+            .gte("updated_at", today.toISOString())
+            .lt("updated_at", tomorrow.toISOString());
+
+        // Get total study hours today (sum of study_hours for profiles updated today)
+        const { data: studyHoursData, error: hoursError } = await supabase
+            .from("profiles")
+            .select("study_hours")
+            .gte("updated_at", today.toISOString())
+            .lt("updated_at", tomorrow.toISOString());
+
+        const totalStudyHours = studyHoursData?.reduce((sum, profile) => sum + (profile.study_hours || 0), 0) || 0;
+
+        // Get purchases made today
+        const { count: todaysPurchases, error: purchasesError } = await supabase
+            .from("user_purchases")
+            .select("*", { count: "exact", head: true })
+            .gte("purchased_at", today.toISOString())
+            .lt("purchased_at", tomorrow.toISOString());
+
+        // Get total active users (all profiles)
+        const { count: totalUsers, error: totalError } = await supabase
+            .from("profiles")
+            .select("*", { count: "exact", head: true });
+
+        if (studentsError || hoursError || purchasesError || totalError) {
+            console.error("Error fetching today's highlights:", { studentsError, hoursError, purchasesError, totalError });
+            return {
+                data: {
+                    activeStudents: 0,
+                    totalStudyHours: 0,
+                    todaysPurchases: 0,
+                    totalUsers: 0
+                },
+                error: studentsError || hoursError || purchasesError || totalError
+            };
+        }
+
+        return {
+            data: {
+                activeStudents: activeStudents || 0,
+                totalStudyHours: Math.round(totalStudyHours * 10) / 10, // Round to 1 decimal
+                todaysPurchases: todaysPurchases || 0,
+                totalUsers: totalUsers || 0
+            },
+            error: null
+        };
+    } catch (error) {
+        console.error("Error in getTodaysHighlights:", error);
+        return {
+            data: {
+                activeStudents: 0,
+                totalStudyHours: 0,
+                todaysPurchases: 0,
+                totalUsers: 0
+            },
+            error
+        };
+    }
+}

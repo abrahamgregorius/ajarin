@@ -1,13 +1,21 @@
 import { Link } from 'react-router-dom';
 import SafeArea from '../components/SafeArea';
 import StreakCoinDisplay from '../components/StreakCoinDisplay';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUserProgress } from '../hooks/useUserProgress';
+import * as db from '../lib/database';
 import { GraduationCap, BookOpen, Users, Play, ChevronDown, TrendingUp, Award, Clock, ChevronRight, Flame, Coins, FlameKindling } from 'lucide-react';
 
 export default function Home() {
     const [selectedLevel, setSelectedLevel] = useState('SD');
+    const [todaysHighlights, setTodaysHighlights] = useState({
+        activeStudents: 0,
+        totalStudyHours: 0,
+        todaysPurchases: 0,
+        totalUsers: 0
+    });
+    const [highlightsLoading, setHighlightsLoading] = useState(true);
     const { user } = useAuth();
 
     // User progress state
@@ -21,6 +29,24 @@ export default function Home() {
         if (hour >= 15 && hour < 18) return 'Selamat Sore';
         return 'Selamat Malam';
     };
+
+    // Fetch today's highlights data
+    useEffect(() => {
+        const fetchTodaysHighlights = async () => {
+            try {
+                const { data, error } = await db.getTodaysHighlights();
+                if (!error && data) {
+                    setTodaysHighlights(data);
+                }
+            } catch (error) {
+                console.error('Error fetching today\'s highlights:', error);
+            } finally {
+                setHighlightsLoading(false);
+            }
+        };
+
+        fetchTodaysHighlights();
+    }, []);
 
     // Data untuk kelas berdasarkan level
     const classesByLevel = {
@@ -144,20 +170,26 @@ export default function Home() {
                     <div className="grid grid-cols-2 gap-4">
                         <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg text-center">
                             <TrendingUp size={24} className="text-blue-600 mx-auto mb-2" />
-                            <p className="text-sm font-medium text-gray-900">500+ Siswa</p>
+                            <p className="text-sm font-medium text-gray-900">
+                                {highlightsLoading ? '...' : `${todaysHighlights.activeStudents}+ Siswa`}
+                            </p>
                             <p className="text-xs text-gray-600">Belajar hari ini</p>
                         </div>
                         <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg text-center">
                             <Award size={24} className="text-green-600 mx-auto mb-2" />
-                            <p className="text-sm font-medium text-gray-900">25 Kursus</p>
-                            <p className="text-xs text-gray-600">Baru ditambahkan</p>
+                            <p className="text-sm font-medium text-gray-900">
+                                {highlightsLoading ? '...' : `${todaysHighlights.totalStudyHours} jam`}
+                            </p>
+                            <p className="text-xs text-gray-600">Total jam belajar</p>
                         </div>
                     </div>
                     <div className="mt-4 pt-4 border-t border-gray-100">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
                                 <Clock size={16} className="text-gray-400" />
-                                <span className="text-sm text-gray-600">Update terakhir: 2 jam yang lalu</span>
+                                <span className="text-sm text-gray-600">
+                                    Update terakhir: {new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                                </span>
                             </div>
                             {/* <button className="text-blue-600 text-sm font-medium hover:text-blue-700">
                                 Lihat Semua
