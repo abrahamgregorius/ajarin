@@ -1,14 +1,24 @@
-import { Link } from 'react-router-dom';
+import { Award, BookOpen, ChevronDown, ChevronRight, Clock, Flame, GraduationCap, TrendingUp } from 'lucide-react';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import SafeArea from '../components/SafeArea';
 import StreakCoinDisplay from '../components/StreakCoinDisplay';
-import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUserProgress } from '../hooks/useUserProgress';
-import { GraduationCap, BookOpen, Users, Play, ChevronDown, TrendingUp, Award, Clock, ChevronRight, Flame, Coins, FlameKindling } from 'lucide-react';
 
 export default function Home() {
     const [selectedLevel, setSelectedLevel] = useState('SD');
     const { user } = useAuth();
+    const navigate = useNavigate();
+
+    // Redirect admins and creators to their dashboards
+    useEffect(() => {
+        if (user?.role === 'admin') {
+            navigate('/admin/moderation', { replace: true });
+        } else if (user?.role === 'creator') {
+            navigate('/creator/upload', { replace: true });
+        }
+    }, [user, navigate]);
 
     // User progress state
     const { streak, coins, hasCompletedToday, loading: progressLoading, completeDailyTask } = useUserProgress();
@@ -98,7 +108,6 @@ export default function Home() {
                             coins={coins}
                             hasCompletedToday={hasCompletedToday}
                         />
-
                     </div>
                 </div>
             </div>

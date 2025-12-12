@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext();
@@ -23,13 +23,47 @@ export const AuthProvider = ({ children }) => {
                 const { data: { session } } = await supabase.auth.getSession();
 
                 if (session?.user) {
-                    // Just set basic user data, let components load profile data themselves
-                    setUser({
-                        id: session.user.id,
-                        name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
-                        email: session.user.email,
-                        avatar: session.user.user_metadata?.avatar_url || null
-                    });
+                    // Fetch user profile to get role with timeout protection
+                    const profilePromise = supabase
+                        .from('profiles')
+                        .select('role, full_name, avatar_url')
+                        .eq('id', session.user.id)
+                        .single();
+
+                    // Set a 10-second timeout
+                    const timeoutPromise = new Promise((_, reject) =>
+                        setTimeout(() => reject(new Error('Profile fetch timeout')), 10000)
+                    );
+
+                    try {
+                        const { data: profile, error: profileError } = await Promise.race([
+                            profilePromise,
+                            timeoutPromise
+                        ]);
+
+                        if (profileError) {
+                            console.warn('Profile fetch error:', profileError);
+                        }
+
+                        setUser({
+                            id: session.user.id,
+                            name: profile?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+                            email: session.user.email,
+                            avatar: profile?.avatar_url || session.user.user_metadata?.avatar_url || null,
+                            role: profile?.role || 'student'  // Default to student if role column missing
+                        });
+                    } catch (fetchError) {
+                        console.warn('Using fallback user data:', fetchError);
+                        // Use fallback data without profile
+                        setUser({
+                            id: session.user.id,
+                            name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+                            email: session.user.email,
+                            avatar: session.user.user_metadata?.avatar_url || null,
+                            role: 'student'  // Default to student on error
+                        });
+                    }
+
                     setIsAuthenticated(true);
                 }
             } catch (error) {
@@ -45,13 +79,45 @@ export const AuthProvider = ({ children }) => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, session) => {
                 if (session?.user) {
-                    // Just set basic user data
-                    setUser({
-                        id: session.user.id,
-                        name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
-                        email: session.user.email,
-                        avatar: session.user.user_metadata?.avatar_url || null
-                    });
+                    // Fetch user profile to get role with timeout protection
+                    const profilePromise = supabase
+                        .from('profiles')
+                        .select('role, full_name, avatar_url')
+                        .eq('id', session.user.id)
+                        .single();
+
+                    const timeoutPromise = new Promise((_, reject) =>
+                        setTimeout(() => reject(new Error('Profile fetch timeout')), 10000)
+                    );
+
+                    try {
+                        const { data: profile, error: profileError } = await Promise.race([
+                            profilePromise,
+                            timeoutPromise
+                        ]);
+
+                        if (profileError) {
+                            console.warn('Profile fetch error:', profileError);
+                        }
+
+                        setUser({
+                            id: session.user.id,
+                            name: profile?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+                            email: session.user.email,
+                            avatar: profile?.avatar_url || session.user.user_metadata?.avatar_url || null,
+                            role: profile?.role || 'student'
+                        });
+                    } catch (fetchError) {
+                        console.warn('Using fallback user data:', fetchError);
+                        setUser({
+                            id: session.user.id,
+                            name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+                            email: session.user.email,
+                            avatar: session.user.user_metadata?.avatar_url || null,
+                            role: 'student'
+                        });
+                    }
+
                     setIsAuthenticated(true);
                 } else {
                     setIsAuthenticated(false);

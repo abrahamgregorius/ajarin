@@ -1,8 +1,8 @@
+import { Eye, EyeOff, GraduationCap, Lock, Mail } from 'lucide-react';
 import { useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import SafeArea from '../components/SafeArea';
 import { useAuth } from '../contexts/AuthContext';
-import { GraduationCap, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 
 export default function Login() {
     const [formData, setFormData] = useState({
@@ -34,8 +34,32 @@ export default function Login() {
         setError('');
 
         try {
-            await login(formData.email, formData.password);
-            navigate(from, { replace: true });
+            const result = await login(formData.email, formData.password);
+
+            // Wait for auth context to update with profile data including role
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Fetch the session to get updated user info
+            const { data: { session } } = await import('../lib/supabase').then(m => m.supabase.auth.getSession());
+
+            if (session?.user) {
+                // Fetch profile to get role
+                const { data: profile } = await import('../lib/supabase').then(m =>
+                    m.supabase.from('profiles').select('role').eq('id', session.user.id).single()
+                );
+
+                const userRole = profile?.role || 'student';
+
+                // Redirect based on role
+                if (userRole === 'admin') {
+                    navigate('/admin/moderation', { replace: true });
+                } else if (userRole === 'creator') {
+                    navigate('/creator/upload', { replace: true });
+                } else {
+                    // Student - redirect to intended page or home
+                    navigate(from, { replace: true });
+                }
+            }
         } catch (err) {
             setError(err.message || 'Login gagal. Silakan coba lagi.');
         } finally {

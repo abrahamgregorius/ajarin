@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-const ProtectedRoute = ({ children }) => {
+const RoleProtectedRoute = ({ children, allowedRoles = [] }) => {
     const { isAuthenticated, user, loading } = useAuth();
     const location = useLocation();
 
@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children }) => {
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
                     <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-                    <p className="text-gray-600">Memeriksa autentikasi...</p>
+                    <p className="text-gray-600">Memeriksa akses...</p>
                 </div>
             </div>
         );
@@ -22,20 +22,23 @@ const ProtectedRoute = ({ children }) => {
         return <Navigate to="/masuk" state={{ from: location }} replace />;
     }
 
-    // Redirect creators and admins to their respective pages if they try to access student pages
-    // Allow access to public pages (Tentang, Kontak) and Profile page
-    const allowedSharedPaths = ['/tentang', '/kontak', '/profil'];
-    const isAllowedPath = allowedSharedPaths.some(path => location.pathname.startsWith(path));
+    // Check if user has the required role
+    const userRole = user?.role || 'student';
+    console.log('RoleProtectedRoute Check:', { userRole, allowedRoles, path: location.pathname });
 
-    if (user?.role === 'admin' && !location.pathname.startsWith('/admin') && !isAllowedPath) {
-        return <Navigate to="/admin/moderation" replace />;
-    }
-
-    if (user?.role === 'creator' && !location.pathname.startsWith('/creator') && !isAllowedPath) {
-        return <Navigate to="/creator/upload" replace />;
+    if (!allowedRoles.includes(userRole)) {
+        // Redirect to role-specific home page
+        if (userRole === 'admin') {
+            return <Navigate to="/admin/moderation" replace />;
+        } else if (userRole === 'creator') {
+            return <Navigate to="/creator/upload" replace />;
+        } else {
+            // Student trying to access creator/admin pages - redirect to home
+            return <Navigate to="/" replace />;
+        }
     }
 
     return children;
 };
 
-export default ProtectedRoute;
+export default RoleProtectedRoute;
