@@ -59,18 +59,19 @@ export function useUserProgress() {
           console.warn('Ranking fetch failed (non-fatal):', e);
         }
 
-        // 3. Load Purchases (Safe)
+        // 3. Load Purchases
         try {
           const { data: purchases } = await db.getUserPurchases(authUser.id);
           if (purchases) {
-            setPurchasedItems(purchases || []);
+            setPurchasedItems(purchases);
+            // Set current nickname if found in purchases
             const nicknamePurchase = purchases.find(p => p.shop_items?.type === 'nickname');
-            if (nicknamePurchase?.shop_items?.data?.nickname) {
+            if (nicknamePurchase) {
               setCurrentNickname(nicknamePurchase.shop_items.data.nickname);
             }
           }
         } catch (e) {
-          console.warn('Purchases fetch failed (non-fatal):', e);
+          console.warn("Purchases fetch failed", e);
         }
 
       } catch (error) {
@@ -133,20 +134,20 @@ export function useUserProgress() {
     return true; // Coins spent successfully
   };
 
-  // Function to update study hours
-  const addStudyHours = async (hours) => {
+  // Function to update study minutes (Replaces addStudyHours)
+  const addStudyMinutes = async (minutes) => {
     if (!authUser?.id) return;
 
     try {
-      await db.updateStudyHours(authUser.id, hours);
-      setStudyHours(prev => prev + hours);
-      // Refresh ranking after updating hours
+      await db.updateStudyMinutes(authUser.id, minutes);
+      setStudyHours(prev => prev + (minutes / 60.0));
+      // Refresh ranking after updating minutes
       const { data: rankingData } = await db.getUserRanking(authUser.id);
       if (rankingData) {
         setUserRank(rankingData);
       }
     } catch (error) {
-      console.error('Error updating study hours:', error);
+      console.error('Error updating study minutes:', error);
     }
   };
 
@@ -183,9 +184,8 @@ export function useUserProgress() {
     }
   };
 
-  // Function to check if user owns an item
   const ownsItem = (itemId) => {
-    return purchasedItems.some(purchase => purchase.item_id === itemId);
+    return purchasedItems.some(p => p.item_id === itemId);
   };
 
   return {
@@ -201,7 +201,7 @@ export function useUserProgress() {
     updateCoins,
     completeDailyTask,
     spendCoins,
-    addStudyHours,
+    addStudyMinutes,
     purchaseItem,
     ownsItem
   };

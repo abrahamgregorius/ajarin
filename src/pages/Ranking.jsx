@@ -49,7 +49,14 @@ export default function Ranking() {
     };
 
     const formatStudyHours = (hours) => {
-        return hours ? `${hours.toFixed(1)} jam` : '0 jam';
+        const minutes = hours * 60; // Convert hours to minutes
+        return minutes ? `${minutes.toFixed(1)} menit` : '0 menit';
+    };
+
+    const getUserNickname = (ranker) => {
+        if (!ranker.user_purchases) return null;
+        const nicknamePurchase = ranker.user_purchases.find(p => p.shop_items?.type === 'nickname');
+        return nicknamePurchase ? nicknamePurchase.shop_items.data.nickname : null;
     };
 
     return (
@@ -88,7 +95,7 @@ export default function Ranking() {
                                     <Clock size={16} className="opacity-75" />
                                     <span className="font-medium">{formatStudyHours(userRank.study_hours)}</span>
                                 </div>
-                                <p className="text-xs opacity-75">Total jam belajar</p>
+                                <p className="text-xs opacity-75">Total menit belajar</p>
                             </div>
                         </div>
                     </div>
@@ -107,10 +114,17 @@ export default function Ranking() {
                                 <div className="w-20 h-16 bg-gray-200 rounded-t-lg flex items-end justify-center pb-2">
                                     <span className="text-xs font-bold text-gray-700">2</span>
                                 </div>
-                                <p className="text-xs font-medium text-gray-900 mt-1 text-center max-w-16 truncate">
-                                    {rankings[1]?.full_name || 'User'}
-                                </p>
-                                <p className="text-xs text-gray-600">{formatStudyHours(rankings[1]?.study_hours)}</p>
+                                <div className="text-center mt-1">
+                                    <p className="text-xs font-medium text-gray-900 max-w-16 truncate">
+                                        {rankings[1]?.full_name || 'User'}
+                                    </p>
+                                    {getUserNickname(rankings[1]) && (
+                                        <p className="text-xs text-blue-600 font-medium">
+                                            {getUserNickname(rankings[1])}
+                                        </p>
+                                    )}
+                                    <p className="text-xs text-gray-600">{formatStudyHours(rankings[1]?.study_hours)}</p>
+                                </div>
                             </div>
 
                             {/* 1st Place */}
@@ -121,10 +135,17 @@ export default function Ranking() {
                                 <div className="w-24 h-20 bg-yellow-400 rounded-t-lg flex items-end justify-center pb-2">
                                     <span className="text-xs font-bold text-white">1</span>
                                 </div>
-                                <p className="text-xs font-medium text-gray-900 mt-1 text-center max-w-20 truncate">
-                                    {rankings[0]?.full_name || 'User'}
-                                </p>
-                                <p className="text-xs text-gray-600">{formatStudyHours(rankings[0]?.study_hours)}</p>
+                                <div className="text-center mt-1">
+                                    <p className="text-xs font-medium text-gray-900 max-w-20 truncate">
+                                        {rankings[0]?.full_name || 'User'}
+                                    </p>
+                                    {getUserNickname(rankings[0]) && (
+                                        <p className="text-xs text-blue-600 font-medium">
+                                            {getUserNickname(rankings[0])}
+                                        </p>
+                                    )}
+                                    <p className="text-xs text-gray-600">{formatStudyHours(rankings[0]?.study_hours)}</p>
+                                </div>
                             </div>
 
                             {/* 3rd Place */}
@@ -135,10 +156,17 @@ export default function Ranking() {
                                 <div className="w-20 h-12 bg-amber-400 rounded-t-lg flex items-end justify-center pb-2">
                                     <span className="text-xs font-bold text-white">3</span>
                                 </div>
-                                <p className="text-xs font-medium text-gray-900 mt-1 text-center max-w-16 truncate">
-                                    {rankings[2]?.full_name || 'User'}
-                                </p>
-                                <p className="text-xs text-gray-600">{formatStudyHours(rankings[2]?.study_hours)}</p>
+                                <div className="text-center mt-1">
+                                    <p className="text-xs font-medium text-gray-900 max-w-16 truncate">
+                                        {rankings[2]?.full_name || 'User'}
+                                    </p>
+                                    {getUserNickname(rankings[2]) && (
+                                        <p className="text-xs text-blue-600 font-medium">
+                                            {getUserNickname(rankings[2])}
+                                        </p>
+                                    )}
+                                    <p className="text-xs text-gray-600">{formatStudyHours(rankings[2]?.study_hours)}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -148,7 +176,7 @@ export default function Ranking() {
                 <div className="bg-white rounded-xl shadow-sm">
                     <div className="p-4 border-b border-gray-100">
                         <h2 className="text-lg font-bold text-gray-900">Daftar Ranking</h2>
-                        <p className="text-sm text-gray-600">Berdasarkan total jam belajar</p>
+                        <p className="text-sm text-gray-600">Berdasarkan total menit belajar</p>
                     </div>
 
                     {loading ? (
@@ -176,6 +204,11 @@ export default function Ranking() {
                                                     {ranker.full_name || 'Anonymous User'}
                                                     {isCurrentUser && <span className="text-blue-600 text-sm ml-1">(Kamu)</span>}
                                                 </p>
+                                                {getUserNickname(ranker) && (
+                                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-yellow-400 to-orange-500 text-white">
+                                                        {getUserNickname(ranker)}
+                                                    </span>
+                                                )}
                                             </div>
                                             <div className="flex items-center space-x-3 text-sm text-gray-600">
                                                 <span>{ranker.grade} - {ranker.school}</span>
@@ -213,11 +246,11 @@ export default function Ranking() {
                     <div className="space-y-2 text-sm text-gray-600">
                         <div className="flex items-start space-x-2">
                             <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                            <span>Belajar secara konsisten setiap hari untuk menambah jam belajar</span>
+                            <span>Belajar secara konsisten setiap hari untuk menambah menit belajar</span>
                         </div>
                         <div className="flex items-start space-x-2">
                             <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                            <span>Selesaikan video dan artikel untuk mendapatkan lebih banyak jam</span>
+                            <span>Selesaikan video dan artikel untuk mendapatkan lebih banyak menit</span>
                         </div>
                         <div className="flex items-start space-x-2">
                             <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
