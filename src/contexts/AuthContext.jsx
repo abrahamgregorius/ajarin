@@ -16,6 +16,25 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    // Helper function to get role from localStorage
+    const getStoredRole = (userId) => {
+        try {
+            const stored = localStorage.getItem(`user_role_${userId}`);
+            return stored || 'student';
+        } catch {
+            return 'student';
+        }
+    };
+
+    // Helper function to store role in localStorage
+    const storeRole = (userId, role) => {
+        try {
+            localStorage.setItem(`user_role_${userId}`, role);
+        } catch (error) {
+            console.warn('Failed to store role in localStorage:', error);
+        }
+    };
+
     // Check if user is logged in on app start
     useEffect(() => {
         const checkAuthStatus = async () => {
@@ -23,6 +42,9 @@ export const AuthProvider = ({ children }) => {
                 const { data: { session } } = await supabase.auth.getSession();
 
                 if (session?.user) {
+                    // Get stored role as fallback
+                    const storedRole = getStoredRole(session.user.id);
+
                     // Fetch user profile to get role with timeout protection
                     const profilePromise = supabase
                         .from('profiles')
@@ -42,25 +64,30 @@ export const AuthProvider = ({ children }) => {
                         ]);
 
                         if (profileError) {
-                            console.warn('Profile fetch error:', profileError);
+                            console.warn('Profile fetch error, using stored role:', profileError);
                         }
+
+                        const userRole = profile?.role || storedRole;
+
+                        // Store the role for future use
+                        storeRole(session.user.id, userRole);
 
                         setUser({
                             id: session.user.id,
                             name: profile?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
                             email: session.user.email,
                             avatar: profile?.avatar_url || session.user.user_metadata?.avatar_url || null,
-                            role: profile?.role || 'student'  // Default to student if role column missing
+                            role: userRole
                         });
                     } catch (fetchError) {
-                        console.warn('Using fallback user data:', fetchError);
-                        // Use fallback data without profile
+                        console.warn('Using stored role due to fetch error:', fetchError);
+                        // Use stored role as fallback
                         setUser({
                             id: session.user.id,
                             name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
                             email: session.user.email,
                             avatar: session.user.user_metadata?.avatar_url || null,
-                            role: 'student'  // Default to student on error
+                            role: storedRole
                         });
                     }
 
@@ -79,6 +106,9 @@ export const AuthProvider = ({ children }) => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, session) => {
                 if (session?.user) {
+                    // Get stored role as fallback
+                    const storedRole = getStoredRole(session.user.id);
+
                     // Fetch user profile to get role with timeout protection
                     const profilePromise = supabase
                         .from('profiles')
@@ -97,24 +127,30 @@ export const AuthProvider = ({ children }) => {
                         ]);
 
                         if (profileError) {
-                            console.warn('Profile fetch error:', profileError);
+                            console.warn('Profile fetch error, using stored role:', profileError);
                         }
+
+                        const userRole = profile?.role || storedRole;
+
+                        // Store the role for future use
+                        storeRole(session.user.id, userRole);
 
                         setUser({
                             id: session.user.id,
                             name: profile?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
                             email: session.user.email,
                             avatar: profile?.avatar_url || session.user.user_metadata?.avatar_url || null,
-                            role: profile?.role || 'student'
+                            role: userRole
                         });
                     } catch (fetchError) {
-                        console.warn('Using fallback user data:', fetchError);
+                        console.warn('Using stored role due to fetch error:', fetchError);
+                        // Use stored role as fallback
                         setUser({
                             id: session.user.id,
                             name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
                             email: session.user.email,
                             avatar: session.user.user_metadata?.avatar_url || null,
-                            role: 'student'
+                            role: storedRole
                         });
                     }
 
@@ -167,9 +203,46 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = async () => {
+        // Clear stored role on logout
+        if (user?.id) {
+            try {
+                localStorage.removeItem(`user_role_${user.id}`);
+            } catch (error) {
+                console.warn('Failed to clear role from localStorage:', error);
+            }
+        }
+
         const { error } = await supabase.auth.signOut();
         if (error) {
             console.error('Error logging out:', error);
+        }
+    };
+
+    // Function to manually update user role (useful for admin role changes)
+    const updateUserRole = async (newRole) => {
+        if (!user?.id) return;
+
+        try {
+            // Update in database
+            const { error } = await supabase
+                .from('profiles')
+                .update({ role: newRole })
+                .eq('id', user.id);
+
+            if (error) {
+                console.error('Error updating role in database:', error);
+                return;
+            }
+
+            // Update in localStorage
+            storeRole(user.id, newRole);
+
+            // Update in state
+            setUser(prev => prev ? { ...prev, role: newRole } : null);
+
+            console.log('Role updated successfully:', newRole);
+        } catch (error) {
+            console.error('Error updating user role:', error);
         }
     };
 
@@ -179,6 +252,7 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         logout,
+        updateUserRole,
         loading
     };
 
