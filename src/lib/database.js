@@ -322,12 +322,11 @@ export async function getVideoComments(videoId, limit = 50) {
   const { data, error } = await supabase
     .from("video_comments")
     .select(`
-            *,
-            profiles:profiles(full_name, avatar_url)
-        `)
+            *        `)
     .eq("video_id", videoId)
     .order("created_at", { ascending: false })
     .limit(limit);
+    console.log(data)
   return { data, error };
 }
 
@@ -539,4 +538,65 @@ export async function deleteVideo(videoId) {
     .delete()
     .eq("id", videoId);
   return { data, error };
+}
+
+// Get popular topics based on video count
+export async function getPopularTopics(limit = 10) {
+  try {
+    // Get topics with their video counts and related class/subject info
+    const { data, error } = await supabase
+      .from("topics")
+      .select(`
+        id,
+        name,
+        materials (
+          name,
+          subjects (
+            name,
+            classes (
+              name
+            )
+          )
+        ),
+        videos!inner (
+          id,
+          approved
+        )
+      `)
+      .eq("videos.approved", true)
+      .order("name");
+
+    if (error) {
+      console.error("Error fetching topics:", error);
+      return { data: [], error };
+    }
+
+    // Group by topic and count videos
+    const topicMap = new Map();
+
+    data.forEach(item => {
+      const topicId = item.id;
+      if (!topicMap.has(topicId)) {
+        topicMap.set(topicId, {
+          id: item.id,
+          name: item.name,
+          material: item.materials?.name || 'Unknown',
+          subject: item.materials?.subjects?.name || 'Unknown',
+          class: item.materials?.subjects?.classes?.name || 'Unknown',
+          videos: 0
+        });
+      }
+      topicMap.get(topicId).videos += 1;
+    });
+
+    // Convert to array and sort by video count (descending)
+    const popularTopics = Array.from(topicMap.values())
+      .sort((a, b) => b.videos - a.videos)
+      .slice(0, limit);
+
+    return { data: popularTopics, error: null };
+  } catch (error) {
+    console.error("Error in getPopularTopics:", error);
+    return { data: [], error };
+  }
 }

@@ -161,7 +161,7 @@ export function useUserProgress() {
     const newCoins = coins + coinReward;
 
     await updateStreak(newStreak);
-    await updateCoinsnewCoins);
+    await updateCoins(newCoins);
 
     return true; // Task completed successfully
   };
@@ -229,6 +229,41 @@ export function useUserProgress() {
     return purchasedItems.some(p => p.item_id === itemId);
   };
 
+  // Function to edit user profile
+  const editProfile = async (profileData) => {
+    if (!authUser?.id) return { success: false, message: 'User not authenticated' };
+
+    try {
+      const { error } = await db.updateUserProfile(authUser.id, profileData);
+
+      if (error) {
+        console.error('Error updating profile:', error);
+        return { success: false, message: error.message || 'Failed to update profile' };
+      }
+
+      // Refresh profile data to reflect changes
+      const { data: updatedProfile } = await db.getUserProfile(authUser.id);
+      if (updatedProfile) {
+        // Update local state with new profile data
+        if (updatedProfile.streak !== undefined) setStreak(updatedProfile.streak);
+        if (updatedProfile.coins !== undefined) setCoins(updatedProfile.coins);
+        if (updatedProfile.study_hours !== undefined) setStudyHours(updatedProfile.study_hours);
+
+        // Update hasCompletedToday if last_completed_at changed
+        if (updatedProfile.last_completed_at) {
+          const today = new Date().toDateString();
+          const lastCompletedDate = new Date(updatedProfile.last_completed_at).toDateString();
+          setHasCompletedToday(today === lastCompletedDate);
+        }
+      }
+
+      return { success: true, message: 'Profile updated successfully' };
+    } catch (error) {
+      console.error('Error editing profile:', error);
+      return { success: false, message: 'An error occurred while updating profile' };
+    }
+  };
+
   return {
     streak,
     coins,
@@ -245,6 +280,7 @@ export function useUserProgress() {
     spendCoins,
     addStudyMinutes,
     purchaseItem,
-    ownsItem
+    ownsItem,
+    editProfile
   };
 }

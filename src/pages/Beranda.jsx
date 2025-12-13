@@ -25,6 +25,8 @@ export default function Home() {
     totalUsers: 0,
   });
   const [highlightsLoading, setHighlightsLoading] = useState(true);
+  const [popularTopics, setPopularTopics] = useState([]);
+  const [popularTopicsLoading, setPopularTopicsLoading] = useState(true);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -73,6 +75,30 @@ export default function Home() {
     fetchTodaysHighlights();
   }, []);
 
+  // Fetch popular topics data
+  useEffect(() => {
+    const fetchPopularTopics = async () => {
+      try {
+        setPopularTopicsLoading(true);
+        const { data, error } = await db.getPopularTopics(5); // Get top 5 popular topics
+        if (!error && data) {
+          setPopularTopics(data);
+        } else {
+          console.error("Error fetching popular topics:", error);
+          // Fallback to empty array if error
+          setPopularTopics([]);
+        }
+      } catch (error) {
+        console.error("Error fetching popular topics:", error);
+        setPopularTopics([]);
+      } finally {
+        setPopularTopicsLoading(false);
+      }
+    };
+
+    fetchPopularTopics();
+  }, []);
+
   // Data untuk kelas berdasarkan level
   const classesByLevel = {
     SD: Array.from({ length: 6 }, (_, i) => i + 1),
@@ -80,36 +106,7 @@ export default function Home() {
     SMA: Array.from({ length: 3 }, (_, i) => i + 10),
   };
 
-  // Data untuk topik populer
-  const popularTopics = [
-    {
-      name: "Persamaan Linear",
-      class: "Kelas 7",
-      subject: "Matematika",
-      videos: 5,
-    },
-    { name: "Struktur Atom", class: "Kelas 10", subject: "IPA", videos: 8 },
-    {
-      name: "Sejarah Perjuangan",
-      class: "Kelas 11",
-      subject: "IPS",
-      videos: 6,
-    },
-    {
-      name: "Tenses Bahasa Inggris",
-      class: "Kelas 8",
-      subject: "Bahasa Inggris",
-      videos: 4,
-    },
-    {
-      name: "Puisi Lama",
-      class: "Kelas 9",
-      subject: "Bahasa Indonesia",
-      videos: 7,
-    },
-  ];
-
-  // Data untuk artikel informatif
+  // Data untuk artikel informatif (static for now)
   const articles = [
     {
       id: 1,
@@ -363,20 +360,44 @@ export default function Home() {
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
             Topik Populer
           </h2>
-          <div className="flex space-x-4 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-gray-100 hover:scrollbar-thumb-blue-400">
-            {popularTopics.map((topic, index) => (
-              <div
-                key={index}
-                className="flex-shrink-0 w-64 bg-gray-50 p-3 rounded-lg"
-              >
-                <h3 className="font-medium text-gray-900 mb-1">{topic.name}</h3>
-                <p className="text-blue-600 text-sm mb-1">
-                  {topic.class} - {topic.subject}
-                </p>
-                <p className="text-gray-600 text-sm">{topic.videos} video</p>
-              </div>
-            ))}
-          </div>
+          {popularTopicsLoading ? (
+            <div className="flex space-x-4 overflow-x-auto pb-2">
+              {[...Array(5)].map((_, index) => (
+                <div key={index} className="flex-shrink-0 w-64 bg-gray-50 p-3 rounded-lg animate-pulse">
+                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-3 bg-gray-200 rounded mb-1"></div>
+                  <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                </div>
+              ))}
+            </div>
+          ) : popularTopics.length > 0 ? (
+            <div className="flex space-x-4 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-gray-100 hover:scrollbar-thumb-blue-400">
+              {popularTopics.map((topic, index) => (
+                <div
+                  key={topic.id || index}
+                  className="flex-shrink-0 w-64 bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                  onClick={() => {
+                    // Navigate to the topic's class/subject/material/topic path
+                    // For now, we'll navigate to the class level
+                    const classNumber = topic.class.match(/Kelas (\d+)/)?.[1];
+                    if (classNumber) {
+                      navigate(`/kelas/${classNumber}`);
+                    }
+                  }}
+                >
+                  <h3 className="font-medium text-gray-900 mb-1">{topic.name}</h3>
+                  <p className="text-blue-600 text-sm mb-1">
+                    {topic.class} - {topic.subject}
+                  </p>
+                  <p className="text-gray-600 text-sm">{topic.videos} video{topic.videos !== 1 ? 's' : ''}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <p>Belum ada topik populer tersedia</p>
+            </div>
+          )}
         </div>
 
         {/* Articles Section */}

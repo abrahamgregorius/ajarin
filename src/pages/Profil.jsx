@@ -78,16 +78,16 @@ export default function Profile() {
                 navigate('/masuk');
                 break;
             case 'profile':
-                // Handle profile edit
-                console.log('Edit profile');
+                // Navigate to edit profile page
+                navigate('/edit-profil');
                 break;
             case 'settings':
                 // Handle settings
                 console.log('Open settings');
                 break;
             case 'help':
-                // Handle help
-                console.log('Open help');
+                // Navigate to help page
+                navigate('/bantuan');
                 break;
             default:
                 break;
@@ -99,11 +99,6 @@ export default function Profile() {
             title: 'Edit Profil',
             icon: User,
             action: 'profile'
-        },
-        {
-            title: 'Pengaturan',
-            icon: Settings,
-            action: 'settings'
         },
         {
             title: 'Bantuan',
