@@ -165,228 +165,222 @@ const CreatorUpload = () => {
     };
 
     return (
-        <SafeArea>
-            <div className="min-h-screen bg-gray-50">
-                {/* Top App Bar */}
-                <div className="bg-white shadow-sm border-b">
-                    <div className="px-4 py-3 flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                            <GraduationCap size={28} className="text-blue-600" />
-                            <h1 className="text-xl font-bold text-gray-900">Upload Video</h1>
-                        </div>
-                        <div className="flex items-center space-x-4">
-                            {/* Streak and Coin Display */}
-                            <StreakCoinDisplay
-                                streak={streak}
-                                coins={coins}
-                                hasCompletedToday={hasCompletedToday}
-                            />
-                        </div>
+        <SafeArea className="bg-gray-50 min-h-screen">
+            <div className="bg-white shadow-sm border-b">
+                <div className="px-4 py-3 flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                        <GraduationCap size={28} className="text-blue-600" />
+                        <h1 className="text-xl font-bold text-gray-900">Upload Video</h1>
                     </div>
+                    <StreakCoinDisplay
+                        streak={streak}
+                        coins={coins}
+                        hasCompletedToday={hasCompletedToday}
+                    />
                 </div>
+            </div>
 
+            <div className="p-4 md:p-6 max-w-4xl mx-auto space-y-6">
 
-                <div className="max-w-4xl mx-auto px-4 py-8">
-                    <div className="bg-white rounded-lg shadow-md p-6 md:p-8">
-                        <h1 className="text-3xl font-bold text-gray-900 mb-6">Submit Video</h1>
+                <div className="bg-white rounded-xl shadow-sm p-6 md:p-8">
 
-                        {error && (
-                            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-                                {error}
-                            </div>
-                        )}
+                    {error && (
+                        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center text-red-700">
+                             <span className="text-sm font-medium">{error}</span>
+                        </div>
+                    )}
 
-                        {success && (
-                            <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
-                                {success}
-                            </div>
-                        )}
+                    {success && (
+                        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center text-green-700">
+                             <span className="text-sm font-medium">{success}</span>
+                        </div>
+                    )}
 
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            {/* YouTube URL */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    YouTube URL *
-                                </label>
-                                <input
-                                    type="url"
-                                    value={youtubeUrl}
-                                    onChange={(e) => setYoutubeUrl(e.target.value)}
-                                    placeholder="https://www.youtube.com/watch?v=..."
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    required
-                                />
-                            </div>
-
-                            {/* Title */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Judul Video *
-                                </label>
-                                <input
-                                    type="text"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    placeholder="Contoh: Pengenalan Aljabar Linear"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    required
-                                />
-                            </div>
-
-                            {/* Description */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Deskripsi *
-                                </label>
-                                <textarea
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    placeholder="Jelaskan isi video..."
-                                    rows="4"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    required
-                                />
-                            </div>
-
-                            {/* Duration and Difficulty */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* Video Details Section */}
+                         <div className="bg-gray-50 rounded-xl p-6 border border-gray-100">
+                            <h3 className="text-md font-bold text-gray-800 mb-4">Detail Video</h3>
+                            <div className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Durasi (menit) *
+                                        YouTube URL <span className="text-red-500">*</span>
                                     </label>
                                     <input
-                                        type="number"
-                                        value={duration}
-                                        onChange={(e) => setDuration(e.target.value)}
-                                        placeholder="15"
-                                        min="1"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        type="url"
+                                        value={youtubeUrl}
+                                        onChange={(e) => setYoutubeUrl(e.target.value)}
+                                        placeholder="https://www.youtube.com/watch?v=..."
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                        required
+                                    />
+                                    <p className="mt-1 text-xs text-gray-500">Pastikan video tidak bersifat privat.</p>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Judul Video <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={title}
+                                        onChange={(e) => setTitle(e.target.value)}
+                                        placeholder="Contoh: Pengenalan Aljabar Linear"
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                         required
                                     />
                                 </div>
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Tingkat Kesulitan *
+                                        Deskripsi <span className="text-red-500">*</span>
+                                    </label>
+                                    <textarea
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
+                                        placeholder="Jelaskan isi video secara singkat..."
+                                        rows="4"
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-y"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Durasi (menit) <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={duration}
+                                            onChange={(e) => setDuration(e.target.value)}
+                                            placeholder="15"
+                                            min="1"
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Tingkat Kesulitan <span className="text-red-500">*</span>
+                                        </label>
+                                        <select
+                                            value={difficulty}
+                                            onChange={(e) => setDifficulty(e.target.value)}
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                                        >
+                                            <option value="Beginner">Pemula</option>
+                                            <option value="Intermediate">Menengah</option>
+                                            <option value="Advanced">Lanjutan</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Curriculum Section */}
+                        <div className="bg-blue-50 rounded-xl p-6 border border-blue-100">
+                            <h3 className="text-md font-bold text-blue-800 mb-4">Lokasi Kurikulum</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Kelas <span className="text-red-500">*</span>
                                     </label>
                                     <select
-                                        value={difficulty}
-                                        onChange={(e) => setDifficulty(e.target.value)}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        value={selectedClass}
+                                        onChange={(e) => setSelectedClass(e.target.value)}
+                                        className="w-full px-4 py-3 border border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                                        required
                                     >
-                                        <option value="Beginner">Pemula</option>
-                                        <option value="Intermediate">Menengah</option>
-                                        <option value="Advanced">Lanjutan</option>
+                                        <option value="">Pilih Kelas</option>
+                                        {classes.map((cls) => (
+                                            <option key={cls.id} value={cls.id}>{cls.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Mata Pelajaran <span className="text-red-500">*</span>
+                                    </label>
+                                    <select
+                                        value={selectedSubject}
+                                        onChange={(e) => setSelectedSubject(e.target.value)}
+                                        className="w-full px-4 py-3 border border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                                        disabled={!selectedClass}
+                                        required
+                                    >
+                                        <option value="">Pilih Mata Pelajaran</option>
+                                        {subjects.map((subject) => (
+                                            <option key={subject.id} value={subject.id}>{subject.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Materi <span className="text-red-500">*</span>
+                                    </label>
+                                    <select
+                                        value={selectedMaterial}
+                                        onChange={(e) => setSelectedMaterial(e.target.value)}
+                                        className="w-full px-4 py-3 border border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                                        disabled={!selectedSubject}
+                                        required
+                                    >
+                                        <option value="">Pilih Materi</option>
+                                        {materials.map((material) => (
+                                            <option key={material.id} value={material.id}>{material.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Topik <span className="text-red-500">*</span>
+                                    </label>
+                                    <select
+                                        value={selectedTopic}
+                                        onChange={(e) => setSelectedTopic(e.target.value)}
+                                        className="w-full px-4 py-3 border border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                                        disabled={!selectedMaterial}
+                                        required
+                                    >
+                                        <option value="">Pilih Topik</option>
+                                        {topics.map((topic) => (
+                                            <option key={topic.id} value={topic.id}>{topic.name}</option>
+                                        ))}
                                     </select>
                                 </div>
                             </div>
+                        </div>
 
-                            {/* Curriculum Location */}
-                            <div className="border-t pt-6">
-                                <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                                    Lokasi Kurikulum *
-                                </h2>
-
-                                <div className="space-y-4">
-                                    {/* Class */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Kelas
-                                        </label>
-                                        <select
-                                            value={selectedClass}
-                                            onChange={(e) => setSelectedClass(e.target.value)}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            required
-                                        >
-                                            <option value="">Pilih Kelas</option>
-                                            {classes.map((cls) => (
-                                                <option key={cls.id} value={cls.id}>{cls.name}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    {/* Subject */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Mata Pelajaran
-                                        </label>
-                                        <select
-                                            value={selectedSubject}
-                                            onChange={(e) => setSelectedSubject(e.target.value)}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            disabled={!selectedClass}
-                                            required
-                                        >
-                                            <option value="">Pilih Mata Pelajaran</option>
-                                            {subjects.map((subject) => (
-                                                <option key={subject.id} value={subject.id}>{subject.name}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    {/* Material */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Materi
-                                        </label>
-                                        <select
-                                            value={selectedMaterial}
-                                            onChange={(e) => setSelectedMaterial(e.target.value)}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            disabled={!selectedSubject}
-                                            required
-                                        >
-                                            <option value="">Pilih Materi</option>
-                                            {materials.map((material) => (
-                                                <option key={material.id} value={material.id}>{material.name}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    {/* Topic */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Topik
-                                        </label>
-                                        <select
-                                            value={selectedTopic}
-                                            onChange={(e) => setSelectedTopic(e.target.value)}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            disabled={!selectedMaterial}
-                                            required
-                                        >
-                                            <option value="">Pilih Topik</option>
-                                            {topics.map((topic) => (
-                                                <option key={topic.id} value={topic.id}>{topic.name}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Submit Button */}
-                            <div className="flex gap-4">
-                                <button
-                                    type="button"
-                                    onClick={() => navigate('/creator/videos')}
-                                    className="flex-1 py-3 px-6 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition"
-                                >
-                                    Batal
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="flex-1 py-3 px-6 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
-                                >
-                                    {loading ? 'Mengirim...' : 'Submit Video'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
+                             <button
+                                type="button"
+                                onClick={() => navigate('/creator/videos')}
+                                className="flex-1 py-3 px-6 border border-gray-200 rounded-xl text-gray-600 font-bold hover:bg-gray-50 hover:text-gray-900 transition-all"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="flex-1 py-3 px-6 bg-blue-600 text-white rounded-xl font-bold section-shadow hover:bg-blue-700 hover:shadow-lg transform hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                            >
+                                {loading ? (
+                                    <span className="flex items-center justify-center gap-2">
+                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                        Mengirim...
+                                    </span>
+                                ) : (
+                                    'Submit Video'
+                                )}
+                            </button>
+                        </div>
+                    </form>
                 </div>
-
-
             </div>
         </SafeArea>
     );

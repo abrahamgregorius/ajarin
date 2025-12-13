@@ -1,5 +1,5 @@
 import { Eye, EyeOff, GraduationCap, Lock, Mail } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import SafeArea from '../components/SafeArea';
 import { useAuth } from '../contexts/AuthContext';
@@ -13,11 +13,26 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const { login } = useAuth();
+    const { login, updateUserRole, isAuthenticated, user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
     const from = location.state?.from?.pathname || '/';
+
+    // Effect to redirect when authentication matches
+    // This handles the case where login promise hangs but onAuthStateChange fires
+    useEffect(() => {
+        if (isAuthenticated && user) {
+            console.log('🔄 Reactive redirect triggered by auth state:', user.role);
+            if (user.role === 'admin') {
+                navigate('/admin/moderation', { replace: true });
+            } else if (user.role === 'creator') {
+                navigate('/creator/upload', { replace: true });
+            } else {
+                navigate(from, { replace: true });
+            }
+        }
+    }, [isAuthenticated, user, navigate, from]);
 
     const handleChange = (e) => {
         setFormData({
@@ -34,21 +49,35 @@ export default function Login() {
         setError('');
 
         try {
-            const result = await login(formData.email, formData.password);
+            const { user: authUser } = await login(formData.email, formData.password);
 
-            // Wait for auth context to update with profile data including role
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            // Fetch the session to get updated user info
-            const { data: { session } } = await import('../lib/supabase').then(m => m.supabase.auth.getSession());
-
-            if (session?.user) {
-                // Fetch profile to get role
-                const { data: profile } = await import('../lib/supabase').then(m =>
-                    m.supabase.from('profiles').select('role').eq('id', session.user.id).single()
+            if (authUser) {
+                // Directly fetch profile to determine role immediately
+                // Directly fetch profile to determine role immediately with timeout
+                const profilePromise = import('../lib/supabase').then(m =>
+                    m.supabase.from('profiles').select('role').eq('id', authUser.id).single()
+                );
+                const timeoutPromise = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Profile fetch timed out')), 5000)
                 );
 
+                const { data: profile } = await Promise.race([
+                    profilePromise,
+                    timeoutPromise
+                ]);
+
                 const userRole = profile?.role || 'student';
+
+                // Force update context to ensure it's in sync before redirect
+                if (updateUserRole) {
+                     // We don't need to await this necessarily if the context is reactive,
+                     // but since updateUserRole updates state, it's safer.
+                     // Actually, updateUserRole in context updates state and local storage.
+                     // It's a good safety net.
+                     await updateUserRole(userRole);
+                }
+
+                console.log('Redirecting based on role:', userRole);
 
                 // Redirect based on role
                 if (userRole === 'admin') {
@@ -61,6 +90,7 @@ export default function Login() {
                 }
             }
         } catch (err) {
+            console.error("Login error:", err);
             setError(err.message || 'Login gagal. Silakan coba lagi.');
         } finally {
             setLoading(false);
