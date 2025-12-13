@@ -139,7 +139,7 @@ const CreatorUpload = () => {
 
         try {
             const videoData = {
-                youtube_url: youtubeUrl,
+                video_url: youtubeUrl,
                 title,
                 description,
                 duration: parseInt(duration),
@@ -153,9 +153,8 @@ const CreatorUpload = () => {
                 setError('Gagal mengirim video: ' + error.message);
             } else {
                 setSuccess('Video berhasil dikirim! Menunggu persetujuan admin.');
-                setTimeout(() => {
-                    navigate('/creator/videos');
-                }, 2000);
+                window.alert('Video berhasil dikirim! Menunggu persetujuan admin.');
+                navigate('/creator/videos');
             }
         } catch (err) {
             setError('Terjadi kesalahan: ' + err.message);

@@ -249,7 +249,7 @@ const AdminModeration = () => {
                                 {/* Thumbnail */}
                                 <div className="relative aspect-video bg-gray-100 overflow-hidden">
                                      <img
-                                        src={getYouTubeThumbnail(video.youtube_url)}
+                                        src={getYouTubeThumbnail(video.video_url)}
                                         alt={video.title}
                                         className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                                     />
@@ -292,7 +292,7 @@ const AdminModeration = () => {
                                         {/* Actions */}
                                         <div className="grid grid-cols-2 gap-3 pt-2">
                                             <a
-                                                href={video.youtube_url}
+                                                href={video.video_url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="col-span-2 flex items-center justify-center py-2.5 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 transition text-sm font-semibold border border-gray-200"
