@@ -44,7 +44,16 @@ export const AuthProvider = ({ children }) => {
             console.log('🔍 Checking auth status...');
             try {
                 console.log('📡 Fetching session from Supabase...');
-                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                // Add execution timeout to prevent indefinite hanging
+                const sessionPromise = supabase.auth.getSession();
+                const timeoutPromise = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Auth check timeout')), 5000)
+                );
+
+                const { data: { session }, error: sessionError } = await Promise.race([
+                    sessionPromise,
+                    timeoutPromise
+                ]);
 
                 if (sessionError) {
                     console.error('❌ Session fetch error:', sessionError);
@@ -59,16 +68,39 @@ export const AuthProvider = ({ children }) => {
                 if (session?.user) {
                     console.log('👤 User found in session:', session.user.id);
 
-                    // Get stored role as fallback
-                    const storedRole = getStoredRole(session.user.id);
-                    console.log('💾 Stored role:', storedRole);
+                    // Fetch profile from DB for initial load
+                    let userRole = 'student';
+                    let profileAvatar = null;
+                    let profileName = null;
+
+                    try {
+                         const { data: profile } = await supabase
+                            .from('profiles')
+                            .select('role, full_name, avatar_url')
+                            .eq('id', session.user.id)
+                            .single();
+
+                        if (profile) {
+                            userRole = profile.role || 'student';
+                            profileAvatar = profile.avatar_url;
+                            profileName = profile.full_name;
+                            storeRole(session.user.id, userRole);
+                        } else {
+                            userRole = getStoredRole(session.user.id);
+                        }
+                    } catch (e) {
+                         console.error("Error fetching initial profile:", e);
+                         userRole = getStoredRole(session.user.id);
+                    }
+
+                    console.log('💾 Effective role:', userRole);
 
                     const userData = {
                         id: session.user.id,
-                        name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+                        name: profileName || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
                         email: session.user.email,
-                        avatar: session.user.user_metadata?.avatar_url || null,
-                        role: storedRole
+                        avatar: profileAvatar || session.user.user_metadata?.avatar_url || null,
+                        role: userRole
                     };
 
                     console.log('👤 Setting user data:', userData);
@@ -95,7 +127,7 @@ export const AuthProvider = ({ children }) => {
 
         // Simple auth state change listener
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            (event, session) => {
+            async (event, session) => {
                 console.log('🔐 Auth state change detected:', event, session?.user?.id || 'No user');
 
                 if (session?.user) {
@@ -108,14 +140,48 @@ export const AuthProvider = ({ children }) => {
                     console.log('🆔 New user detected');
                     setLastUserId(session.user.id);
 
-                    const storedRole = getStoredRole(session.user.id);
+                    // Fetch profile to get role directly from DB
+                    let userRole = 'student';
+                    let profileAvatar = null;
+                    let profileName = null;
+
+                    try {
+
+                        // Fetch profile with timeout
+                        const profilePromise = supabase
+                            .from('profiles')
+                            .select('role, full_name, avatar_url')
+                            .eq('id', session.user.id)
+                            .single();
+
+                        const timeoutPromise = new Promise((_, reject) =>
+                            setTimeout(() => reject(new Error('Profile fetch timed out')), 10000)
+                        );
+
+                        const { data: profile } = await Promise.race([
+                            profilePromise,
+                            timeoutPromise
+                        ]);
+
+                        if (profile) {
+                            userRole = profile.role || 'student';
+                            profileAvatar = profile.avatar_url;
+                            profileName = profile.full_name;
+                            // Update local storage
+                            storeRole(session.user.id, userRole);
+                        }
+                    } catch (error) {
+                        console.error("Error fetching profile on auth change:", error);
+                        // Fallback to stored role
+                        userRole = getStoredRole(session.user.id);
+                    }
 
                     const userData = {
                         id: session.user.id,
-                        name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+                        name: profileName || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
                         email: session.user.email,
-                        avatar: session.user.user_metadata?.avatar_url || null,
-                        role: storedRole
+                        avatar: profileAvatar || session.user.user_metadata?.avatar_url || null,
+                        role: userRole
                     };
 
                     console.log('👤 Setting user data from auth change:', userData);
@@ -138,10 +204,20 @@ export const AuthProvider = ({ children }) => {
         console.log('🔑 Starting login process for:', email);
         try {
             console.log('📡 Sending login request to Supabase...');
-            const { data, error } = await supabase.auth.signInWithPassword({
+
+            // Add timeout for login request
+            const loginPromise = supabase.auth.signInWithPassword({
                 email,
                 password,
             });
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Login request timed out')), 5000)
+            );
+
+            const { data, error } = await Promise.race([
+                loginPromise,
+                timeoutPromise
+            ]);
 
             if (error) {
                 console.error('❌ Login failed:', error.message);

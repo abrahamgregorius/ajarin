@@ -126,237 +126,202 @@ const AdminModeration = () => {
     }
 
     return (
-        <SafeArea>
-            <div className="min-h-screen bg-gray-50 pb-20">
-                {/* Top App Bar */}
-                <div className="bg-white shadow-sm border-b">
-                    <div className="px-4 py-3 flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                            <GraduationCap size={28} className="text-blue-600" />
-                            <h1 className="text-xl font-bold text-gray-900">Moderation</h1>
+        <SafeArea className="bg-gray-50 min-h-screen">
+            {/* Top App Bar */}
+            <div className="bg-white shadow-sm border-b">
+                <div className="px-4 py-3 flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                        <GraduationCap size={28} className="text-blue-600" />
+                        <h1 className="text-xl font-bold text-gray-900">Moderasi Video</h1>
+                    </div>
+                    <StreakCoinDisplay
+                        streak={streak}
+                        coins={coins}
+                        hasCompletedToday={hasCompletedToday}
+                    />
+                </div>
+            </div>
+
+            <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
+
+                {/* Statistics */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 flex items-center justify-between">
+                         <div>
+                            <p className="text-yellow-700 text-xs font-bold uppercase tracking-wider">Pending</p>
+                            <p className="text-2xl font-bold text-yellow-900 mt-1">{stats.pending}</p>
                         </div>
-                        <div className="flex items-center space-x-4">
-                            {/* Streak and Coin Display */}
-                            <StreakCoinDisplay
-                                streak={streak}
-                                coins={coins}
-                                hasCompletedToday={hasCompletedToday}
-                            />
+                         <div className="w-10 h-10 bg-yellow-200 rounded-full flex items-center justify-center">
+                            <span className="text-yellow-700 font-bold">P</span>
+                        </div>
+                    </div>
+                    <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center justify-between">
+                         <div>
+                            <p className="text-green-700 text-xs font-bold uppercase tracking-wider">Disetujui</p>
+                            <p className="text-2xl font-bold text-green-900 mt-1">{stats.approved}</p>
+                        </div>
+                         <div className="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center">
+                            <span className="text-green-700 font-bold">✓</span>
+                        </div>
+                    </div>
+                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center justify-between">
+                         <div>
+                            <p className="text-blue-700 text-xs font-bold uppercase tracking-wider">Total</p>
+                            <p className="text-2xl font-bold text-blue-900 mt-1">{stats.pending + stats.approved}</p>
+                        </div>
+                         <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center">
+                            <span className="text-blue-700 font-bold">Total</span>
                         </div>
                     </div>
                 </div>
 
-
-                <div className="max-w-7xl mx-auto px-4 py-8">
-                    {/* Header */}
-                    <div className="mb-6">
-                        <h1 className="text-3xl font-bold text-gray-900">Moderasi Video</h1>
-                        <p className="text-gray-600 mt-1">Kelola dan moderasi video yang disubmit oleh creator</p>
+                {error && (
+                    <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-center text-red-700">
+                         <span className="text-sm font-medium">{error}</span>
                     </div>
+                )}
 
-                    {/* Statistics */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-yellow-700 text-sm font-medium">Pending</p>
-                                    <p className="text-3xl font-bold text-yellow-900 mt-1">{stats.pending}</p>
-                                </div>
-                                <div className="w-12 h-12 bg-yellow-200 rounded-full flex items-center justify-center">
-                                    <svg className="w-6 h-6 text-yellow-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                            </div>
+                {/* Filters */}
+                <div className="bg-white rounded-xl shadow-sm p-4 md:p-6">
+                    <div className="flex flex-col md:flex-row gap-4">
+                        {/* Search */}
+                        <div className="flex-1">
+                            <input
+                                type="text"
+                                placeholder="Cari video atau creator..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            />
                         </div>
 
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-green-700 text-sm font-medium">Disetujui</p>
-                                    <p className="text-3xl font-bold text-green-900 mt-1">{stats.approved}</p>
-                                </div>
-                                <div className="w-12 h-12 bg-green-200 rounded-full flex items-center justify-center">
-                                    <svg className="w-6 h-6 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-blue-700 text-sm font-medium">Total Video</p>
-                                    <p className="text-3xl font-bold text-blue-900 mt-1">{stats.pending + stats.approved}</p>
-                                </div>
-                                <div className="w-12 h-12 bg-blue-200 rounded-full flex items-center justify-center">
-                                    <svg className="w-6 h-6 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {error && (
-                        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-                            {error}
-                        </div>
-                    )}
-
-                    {/* Filters */}
-                    <div className="bg-white rounded-lg shadow-md p-4 mb-6">
-                        <div className="flex flex-col md:flex-row gap-4">
-                            {/* Search */}
-                            <div className="flex-1">
-                                <input
-                                    type="text"
-                                    placeholder="Cari video atau creator..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                />
-                            </div>
-
-                            {/* Status Filter */}
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => setFilter('pending')}
-                                    className={`px-4 py-2 rounded-lg font-medium transition ${
-                                        filter === 'pending'
-                                            ? 'bg-yellow-500 text-white'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                    }`}
-                                >
-                                    Pending
-                                </button>
-                                <button
-                                    onClick={() => setFilter('approved')}
-                                    className={`px-4 py-2 rounded-lg font-medium transition ${
-                                        filter === 'approved'
-                                            ? 'bg-green-600 text-white'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                    }`}
-                                >
-                                    Disetujui
-                                </button>
-                                <button
-                                    onClick={() => setFilter('all')}
-                                    className={`px-4 py-2 rounded-lg font-medium transition ${
-                                        filter === 'all'
-                                            ? 'bg-blue-600 text-white'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                    }`}
-                                >
-                                    Semua
-                                </button>
-                            </div>
+                        {/* Status Filter */}
+                        <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
+                            <button
+                                onClick={() => setFilter('pending')}
+                                className={`px-4 py-2 rounded-xl font-medium whitespace-nowrap transition-all ${
+                                    filter === 'pending'
+                                        ? 'bg-yellow-100 text-yellow-700 border border-yellow-200'
+                                        : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100'
+                                }`}
+                            >
+                                Pending
+                            </button>
+                            <button
+                                onClick={() => setFilter('approved')}
+                                className={`px-4 py-2 rounded-xl font-medium whitespace-nowrap transition-all ${
+                                    filter === 'approved'
+                                        ? 'bg-green-100 text-green-700 border border-green-200'
+                                        : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100'
+                                }`}
+                            >
+                                Disetujui
+                            </button>
+                             <button
+                                onClick={() => setFilter('all')}
+                                className={`px-4 py-2 rounded-xl font-medium whitespace-nowrap transition-all ${
+                                    filter === 'all'
+                                        ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                                        : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100'
+                                }`}
+                            >
+                                Semua
+                            </button>
                         </div>
                     </div>
+                </div>
 
-                    {/* Video List */}
-                    {filteredVideos.length === 0 ? (
-                        <div className="bg-white rounded-lg shadow-md p-12 text-center">
-                            <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-2">Tidak ada video</h3>
-                            <p className="text-gray-600">
-                                {searchQuery ? 'Tidak ada video yang cocok dengan pencarian Anda' : 'Tidak ada video untuk dimoderasikan'}
-                            </p>
+                {/* Video List */}
+                {filteredVideos.length === 0 ? (
+                    <div className="bg-white rounded-xl shadow-sm p-12 text-center border border-gray-100">
+                        <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                             <GraduationCap size={40} className="text-gray-300" />
                         </div>
-                    ) : (
-                        <div className="space-y-4">
-                            {filteredVideos.map((video) => (
-                                <div key={video.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
-                                    <div className="md:flex">
-                                        {/* Thumbnail */}
-                                        <div className="md:w-80 relative">
-                                            <img
-                                                src={getYouTubeThumbnail(video.youtube_url)}
-                                                alt={video.title}
-                                                className="w-full h-48 md:h-full object-cover"
-                                            />
-                                            <div className="absolute top-2 left-2">
-                                                {video.approved ? (
-                                                    <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                                                        Disetujui
-                                                    </span>
-                                                ) : (
-                                                    <span className="bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                                                        Pending
-                                                    </span>
-                                                )}
-                                            </div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">Tidak ada video</h3>
+                         <p className="text-gray-500 max-w-md mx-auto">
+                            {searchQuery ? 'Tidak ada video yang cocok dengan pencarian Anda' : 'Tidak ada video dalam kategori ini'}
+                        </p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredVideos.map((video) => (
+                            <div key={video.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col h-full group">
+                                {/* Thumbnail */}
+                                <div className="relative aspect-video bg-gray-100 overflow-hidden">
+                                     <img
+                                        src={getYouTubeThumbnail(video.video_url)}
+                                        alt={video.title}
+                                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                                    />
+                                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
+                                    <div className="absolute top-3 right-3">
+                                        {video.approved ? (
+                                            <span className="bg-green-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm border border-green-400">
+                                                Disetujui
+                                            </span>
+                                        ) : (
+                                            <span className="bg-yellow-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm border border-yellow-400">
+                                                Pending
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm text-white px-2 py-1 rounded text-xs font-medium">
+                                        {video.duration} mnt
+                                    </div>
+                                </div>
+
+                                {/* Content */}
+                                <div className="p-5 flex flex-col flex-1">
+                                    <div className="mb-2">
+                                         <h3 className="font-bold text-gray-900 line-clamp-2 text-lg group-hover:text-blue-600 transition-colors" title={video.title}>{video.title}</h3>
+                                         <p className="text-xs text-gray-500 mt-1">Oleh: {video.profiles?.full_name || video.profiles?.email || 'Unknown'}</p>
+                                    </div>
+                                    <p className="text-sm text-gray-500 mb-4 line-clamp-2">{video.description}</p>
+
+                                    <div className="mt-auto pt-4 border-t border-gray-50 space-y-3">
+                                        <div className="text-xs text-gray-400 font-medium">
+                                            <p className="line-clamp-1 truncate" title={getCurriculumPath(video)}>
+                                                {getCurriculumPath(video)}
+                                            </p>
                                         </div>
 
-                                        {/* Content */}
-                                        <div className="flex-1 p-6">
-                                            <div className="flex justify-between items-start mb-3">
-                                                <div className="flex-1">
-                                                    <h3 className="text-xl font-bold text-gray-900 mb-2">{video.title}</h3>
-                                                    <p className="text-gray-600 mb-3">{video.description}</p>
-                                                </div>
-                                            </div>
+                                         <div className="flex items-center justify-between text-xs text-gray-400">
+                                            <span>{new Date(video.created_at).toLocaleDateString('id-ID')}</span>
+                                        </div>
 
-                                            <div className="space-y-2 mb-4">
-                                                <div className="flex items-center text-sm text-gray-600">
-                                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                    </svg>
-                                                    <span>Creator: <strong>{video.profiles?.full_name || video.profiles?.email || 'Unknown'}</strong></span>
-                                                </div>
-                                                <div className="flex items-center text-sm text-gray-600">
-                                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                                    </svg>
-                                                    <span className="truncate">{getCurriculumPath(video)}</span>
-                                                </div>
-                                                <div className="flex items-center text-sm text-gray-600">
-                                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    </svg>
-                                                    <span>Durasi: {video.duration} menit | Disubmit: {new Date(video.created_at).toLocaleDateString('id-ID')}</span>
-                                                </div>
-                                            </div>
-
-                                            {/* Actions */}
-                                            <div className="flex flex-wrap gap-2">
-                                                <a
-                                                    href={video.youtube_url}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm font-medium"
-                                                >
-                                                    Lihat Video
-                                                </a>
-                                                {!video.approved && (
-                                                    <>
-                                                        <button
-                                                            onClick={() => handleApprove(video.id)}
-                                                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium"
-                                                        >
-                                                            ✓ Setujui
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleReject(video.id)}
-                                                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium"
-                                                        >
-                                                            ✕ Tolak
-                                                        </button>
-                                                    </>
-                                                )}
-                                            </div>
+                                        {/* Actions */}
+                                        <div className="grid grid-cols-2 gap-3 pt-2">
+                                            <a
+                                                href={video.video_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="col-span-2 flex items-center justify-center py-2.5 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 transition text-sm font-semibold border border-gray-200"
+                                            >
+                                                Tonton
+                                            </a>
+                                            {!video.approved && (
+                                                <>
+                                                    <button
+                                                        onClick={() => handleApprove(video.id)}
+                                                        className="flex items-center justify-center py-2.5 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition text-sm font-semibold border border-green-100"
+                                                    >
+                                                        Setujui
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleReject(video.id)}
+                                                        className="flex items-center justify-center py-2.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition text-sm font-semibold border border-red-100"
+                                                    >
+                                                        Tolak
+                                                    </button>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-
-
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </SafeArea>
     );

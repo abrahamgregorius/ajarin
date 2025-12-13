@@ -1,9 +1,9 @@
+import { Award, Clock, Coins, Crown, Medal, Star, TrendingUp, Trophy, Zap } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import SafeArea from "../components/SafeArea";
 import StreakCoinDisplay from "../components/StreakCoinDisplay";
-import { Trophy, Medal, Award, Clock, TrendingUp, Crown, Star, Zap, Coins } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { useUserProgress } from '../hooks/useUserProgress';
 import { useAuth } from '../contexts/AuthContext';
+import { useUserProgress } from '../hooks/useUserProgress';
 import * as db from '../lib/database';
 
 export default function Ranking() {
@@ -11,14 +11,24 @@ export default function Ranking() {
     const { streak, coins, hasCompletedToday, studyHours, userRank } = useUserProgress();
     const [rankings, setRankings] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const loadRankings = async () => {
-            const { data, error } = await db.getRanking(50);
-            if (data && !error) {
-                setRankings(data);
+            try {
+                const { data, error } = await db.getRanking(50);
+                if (error) {
+                    console.error("Rankings Fetch Error:", error);
+                    setError(error.message || "Gagal memuat data ranking");
+                } else {
+                    setRankings(data || []);
+                }
+            } catch (err) {
+                console.error("Rankings Unexpected Error:", err);
+                setError(err.message || "Terjadi kesalahan tidak terduga");
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
         loadRankings();
     }, []);
@@ -59,6 +69,11 @@ export default function Ranking() {
         return nicknamePurchase ? nicknamePurchase.shop_items.data.nickname : null;
     };
 
+    // Calculate effective rank: Use list position if available, otherwise fallback to DB rank
+    const userListIndex = rankings.findIndex(r => r.id === user?.id); // 0-based
+    const effectiveRank = userListIndex !== -1 ? userListIndex + 1 : userRank?.rank;
+    const effectiveStudyHours = userListIndex !== -1 ? rankings[userListIndex].study_hours : userRank?.study_hours;
+
     return (
         <SafeArea className="bg-gray-50 min-h-screen">
             {/* Top App Bar */}
@@ -78,22 +93,22 @@ export default function Ranking() {
 
             <div className="p-4 space-y-6">
                 {/* User Current Rank */}
-                {userRank && (
+                {effectiveRank && (
                     <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl p-4 shadow-sm">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
-                                <div className={`w-10 h-10 rounded-full ${getRankBadge(userRank.rank)} flex items-center justify-center`}>
-                                    {getRankIcon(userRank.rank)}
+                                <div className={`w-10 h-10 rounded-full ${getRankBadge(effectiveRank)} flex items-center justify-center`}>
+                                    {getRankIcon(effectiveRank)}
                                 </div>
                                 <div>
                                     <p className="text-sm opacity-90">Ranking Kamu</p>
-                                    <p className="font-bold text-lg">#{userRank.rank}</p>
+                                    <p className="font-bold text-lg">#{effectiveRank}</p>
                                 </div>
                             </div>
                             <div className="text-right">
                                 <div className="flex items-center space-x-1">
                                     <Clock size={16} className="opacity-75" />
-                                    <span className="font-medium">{formatStudyHours(userRank.study_hours)}</span>
+                                    <span className="font-medium">{formatStudyHours(effectiveStudyHours)}</span>
                                 </div>
                                 <p className="text-xs opacity-75">Total menit belajar</p>
                             </div>
@@ -102,7 +117,7 @@ export default function Ranking() {
                 )}
 
                 {/* Top 3 Podium */}
-                {rankings.length >= 3 && (
+                {rankings.length >= 3 && !loading && !error && (
                     <div className="bg-white rounded-xl p-4 shadow-sm">
                         <h2 className="text-lg font-bold text-gray-900 mb-4 text-center">Podium Teratas</h2>
                         <div className="flex items-end justify-center space-x-4 mb-6">
@@ -184,6 +199,24 @@ export default function Ranking() {
                             <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
                             <p className="text-gray-600">Memuat ranking...</p>
                         </div>
+                    ) : error ? (
+                        <div className="p-8 text-center">
+                            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <Zap className="w-6 h-6 text-red-500" />
+                            </div>
+                            <p className="text-red-500 font-medium mb-1">Gagal memuat ranking</p>
+                            <p className="text-xs text-gray-500 mb-3">{error}</p>
+                            <button
+                                onClick={() => window.location.reload()}
+                                className="text-sm text-blue-600 font-medium hover:underline"
+                            >
+                                Coba lagi
+                            </button>
+                        </div>
+                    ) : rankings.length === 0 ? (
+                        <div className="p-8 text-center text-gray-500">
+                            <p>Belum ada data ranking.</p>
+                        </div>
                     ) : (
                         <div className="divide-y divide-gray-100">
                             {rankings.map((ranker, index) => {
@@ -211,7 +244,7 @@ export default function Ranking() {
                                                 )}
                                             </div>
                                             <div className="flex items-center space-x-3 text-sm text-gray-600">
-                                                <span>{ranker.grade} - {ranker.school}</span>
+                                                <span>{ranker.grade ? `${ranker.grade} - ${ranker.school || ''}` : ranker.school || 'Pengguna Umum'}</span>
                                                 <div className="flex items-center space-x-1">
                                                     <Star size={12} />
                                                     <span>{ranker.streak} streak</span>
