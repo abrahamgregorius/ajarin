@@ -69,6 +69,11 @@ export default function Ranking() {
         return nicknamePurchase ? nicknamePurchase.shop_items.data.nickname : null;
     };
 
+    // Calculate effective rank: Use list position if available, otherwise fallback to DB rank
+    const userListIndex = rankings.findIndex(r => r.id === user?.id); // 0-based
+    const effectiveRank = userListIndex !== -1 ? userListIndex + 1 : userRank?.rank;
+    const effectiveStudyHours = userListIndex !== -1 ? rankings[userListIndex].study_hours : userRank?.study_hours;
+
     return (
         <SafeArea className="bg-gray-50 min-h-screen">
             {/* Top App Bar */}
@@ -88,22 +93,22 @@ export default function Ranking() {
 
             <div className="p-4 space-y-6">
                 {/* User Current Rank */}
-                {userRank && (
+                {effectiveRank && (
                     <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl p-4 shadow-sm">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
-                                <div className={`w-10 h-10 rounded-full ${getRankBadge(userRank.rank)} flex items-center justify-center`}>
-                                    {getRankIcon(userRank.rank)}
+                                <div className={`w-10 h-10 rounded-full ${getRankBadge(effectiveRank)} flex items-center justify-center`}>
+                                    {getRankIcon(effectiveRank)}
                                 </div>
                                 <div>
                                     <p className="text-sm opacity-90">Ranking Kamu</p>
-                                    <p className="font-bold text-lg">#{userRank.rank}</p>
+                                    <p className="font-bold text-lg">#{effectiveRank}</p>
                                 </div>
                             </div>
                             <div className="text-right">
                                 <div className="flex items-center space-x-1">
                                     <Clock size={16} className="opacity-75" />
-                                    <span className="font-medium">{formatStudyHours(userRank.study_hours)}</span>
+                                    <span className="font-medium">{formatStudyHours(effectiveStudyHours)}</span>
                                 </div>
                                 <p className="text-xs opacity-75">Total menit belajar</p>
                             </div>
