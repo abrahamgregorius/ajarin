@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import * as db from '../lib/database';
 
@@ -161,7 +161,7 @@ export function useUserProgress() {
     const newCoins = coins + coinReward;
 
     await updateStreak(newStreak);
-    await updateCoinsnewCoins);
+    await updateCoins(newCoins);
 
     return true; // Task completed successfully
   };

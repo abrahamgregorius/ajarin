@@ -170,18 +170,13 @@ export async function getRanking(limit = 50) {
             grade,
             school,
             streak,
-            coins,
-            user_purchases (
-                shop_items (
-                    type,
-                    data
-                )
-            )
+            coins
         `)
     .order("study_hours", { ascending: false })
     .limit(limit);
   return { data, error };
 }
+
 
 export async function getUserRanking(userId) {
   // Get user's study hours
@@ -322,9 +317,9 @@ export async function getVideoComments(videoId, limit = 50) {
   const { data, error } = await supabase
     .from("video_comments")
     .select(`
-            *,
-            profiles:profiles(full_name, avatar_url)
-        `)
+    *,
+    profiles: profiles(full_name, avatar_url)
+      `)
     .eq("video_id", videoId)
     .order("created_at", { ascending: false })
     .limit(limit);
@@ -419,20 +414,20 @@ export async function getPendingVideos() {
     .from("videos")
     .select(`
       *,
-      profiles!videos_creator_id_fkey (full_name, email),
-      topics (
-        name,
-        materials (
+      profiles!videos_creator_id_fkey(full_name, email),
+        topics(
           name,
-          subjects (
+          materials(
             name,
-            classes (
-              name
+            subjects(
+              name,
+              classes(
+                name
+              )
             )
           )
         )
-      )
-    `)
+          `)
     .eq("approved", false)
     .order("created_at", { ascending: false });
   return { data, error };
@@ -442,21 +437,21 @@ export async function getAllVideos(approvedOnly = false) {
   let query = supabase
     .from("videos")
     .select(`
-      *,
-      profiles!videos_creator_id_fkey (full_name, email),
-      topics (
-        name,
-        materials (
-          name,
-          subjects (
+        *,
+        profiles!videos_creator_id_fkey(full_name, email),
+          topics(
             name,
-            classes (
-              name
+            materials(
+              name,
+              subjects(
+                name,
+                classes(
+                  name
+                )
+              )
             )
           )
-        )
-      )
-    `)
+            `)
     .order("created_at", { ascending: false });
 
   if (approvedOnly) {
@@ -514,20 +509,20 @@ export async function getCreatorVideos(userId) {
   const { data, error } = await supabase
     .from("videos")
     .select(`
-      *,
-      topics (
-        name,
-        materials (
-          name,
-          subjects (
+          *,
+          topics(
             name,
-            classes (
-              name
+            materials(
+              name,
+              subjects(
+                name,
+                classes(
+                  name
+                )
+              )
             )
           )
-        )
-      )
-    `)
+            `)
     .eq("creator_id", userId)
     .order("created_at", { ascending: false });
   return { data, error };
