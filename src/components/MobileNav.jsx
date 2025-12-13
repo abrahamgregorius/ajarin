@@ -24,6 +24,10 @@ export default function MobileNav() {
             setActive('Videos');
         } else if (location.pathname.startsWith('/admin')) {
             setActive('Admin');
+        } else if (location.pathname.startsWith('/bantuan')) {
+            setActive('Profil');
+        } else if (location.pathname.startsWith('/edit-profil')) {
+            setActive('Profil');
         } else {
             setActive('Beranda');
         }

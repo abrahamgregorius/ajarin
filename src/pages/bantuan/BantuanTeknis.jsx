@@ -110,25 +110,25 @@ export default function BantuanTeknis() {
             step: 1,
             title: 'Identifikasi Masalah',
             description: 'Tentukan gejala yang Anda alami dengan jelas.',
-            icon: '🔍'
+            icon: ''
         },
         {
             step: 2,
             title: 'Coba Solusi Dasar',
             description: 'Restart aplikasi, periksa koneksi internet, dan bersihkan cache.',
-            icon: '🔧'
+            icon: ''
         },
         {
             step: 3,
             title: 'Periksa Kompatibilitas',
             description: 'Pastikan perangkat dan sistem operasi Anda didukung.',
-            icon: '📱'
+            icon: ''
         },
         {
             step: 4,
             title: 'Hubungi Dukungan',
             description: 'Jika masalah berlanjut, laporkan ke tim dukungan dengan detail lengkap.',
-            icon: '📞'
+            icon: ''
         }
     ];
 
@@ -227,7 +227,7 @@ export default function BantuanTeknis() {
 
                 {/* Troubleshooting Steps */}
                 <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-6 border border-green-200">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">🔧 Panduan Troubleshooting</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Panduan Troubleshooting</h3>
                     <div className="space-y-4">
                         {troubleshootingSteps.map((step, index) => (
                             <div key={index} className="flex items-start space-x-4">
@@ -236,7 +236,7 @@ export default function BantuanTeknis() {
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex items-center space-x-2 mb-1">
-                                        <span className="text-lg">{step.icon}</span>
+                                        {/* <span className="text-lg">{step.icon}</span> */}
                                         <h4 className="font-semibold text-gray-900">{step.title}</h4>
                                     </div>
                                     <p className="text-gray-600 text-sm">{step.description}</p>
@@ -248,7 +248,7 @@ export default function BantuanTeknis() {
 
                 {/* Common Issues */}
                 <div className="bg-white rounded-xl p-6 shadow-sm">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">⚠️ Masalah Umum & Solusi Cepat</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Masalah Umum & Solusi Cepat</h3>
                     <div className="space-y-3">
                         <div className="flex items-start space-x-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
                             <AlertTriangle size={20} className="text-yellow-600 flex-shrink-0 mt-0.5" />

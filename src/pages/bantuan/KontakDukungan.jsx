@@ -196,7 +196,7 @@ export default function KontakDukungan() {
 
                 {/* Contact Methods */}
                 <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 border border-green-200">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">📞 Cara Menghubungi Kami</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Cara Menghubungi Kami</h3>
                     <div className="space-y-4">
                         {contactMethods.map((method, index) => (
                             <div key={index} className="bg-white rounded-lg p-4 flex items-center space-x-4">
@@ -219,7 +219,7 @@ export default function KontakDukungan() {
 
                 {/* Contact Form */}
                 <div className="bg-white rounded-xl p-6 shadow-sm">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">📝 Kirim Pesan Langsung</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Kirim Pesan Langsung</h3>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -348,7 +348,7 @@ export default function KontakDukungan() {
 
                 {/* Response Time Info */}
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">⏰ Waktu Response</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Waktu Response</h3>
                     <div className="space-y-3">
                         <div className="flex items-center justify-between p-3 bg-white rounded-lg">
                             <span className="text-gray-900 font-medium">Email Support</span>
