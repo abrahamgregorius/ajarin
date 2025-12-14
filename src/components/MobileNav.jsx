@@ -70,14 +70,14 @@ export default function MobileNav() {
     return (
         <>
             <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 border-t border-blue-400 bg-blue-400 rounded-tl-[2rem] rounded-tr-[2rem] h-[100px] w-full max-w-lg z-50">
-                <div className="flex justify-around items-center h-full px-4">
+                <div className="flex justify-around items-center h-full px-2">
                     {menuItems.map((item) => (
                         <Link to={`${item.path}`}
                             key={item.name}
                         >
                             <div
                                 onClick={() => setActive(item.name)}
-                                className={`w-19 h-16 flex flex-col select-none items-center justify-center rounded-lg transition-colors duration-200 ${active === item.name ? 'bg-white/20' : 'hover:bg-white/10'
+                                className={`w-14 h-14 flex flex-col select-none items-center justify-center rounded-lg transition-colors duration-200 ${active === item.name ? 'bg-white/20' : 'hover:bg-white/10'
                                     }`}
                             >
                                 <div className={`mb-1 ${active === item.name ? 'text-white' : 'text-blue-100'}`}>
