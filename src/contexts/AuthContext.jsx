@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext();
@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const initialCheckDoneRef = useRef(false);
     const [lastUserId, setLastUserId] = useState(null); // Track last processed user ID
 
     // Helper function to get role from localStorage
@@ -120,6 +121,7 @@ export const AuthProvider = ({ children }) => {
             } finally {
                 console.log('🏁 Auth check completed, setting loading to false');
                 setLoading(false);
+                initialCheckDoneRef.current = true;
             }
         };
 
@@ -129,6 +131,12 @@ export const AuthProvider = ({ children }) => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, session) => {
                 console.log('🔐 Auth state change detected:', event, session?.user?.id || 'No user');
+
+                // Skip processing if initial check is not done yet
+                if (!initialCheckDoneRef.current) {
+                    console.log('⏳ Initial auth check not done yet, skipping auth state change');
+                    return;
+                }
 
                 if (session?.user) {
                     // Skip if this is the same user we already processed

@@ -70,7 +70,7 @@ export default function MobileNav() {
     return (
         <>
             <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 border-t border-blue-400 bg-blue-400 rounded-tl-[2rem] rounded-tr-[2rem] h-[100px] w-full max-w-lg z-50">
-                <div className="flex justify-center items-center gap-6 h-full px-2">
+                <div className="flex justify-center items-center gap-4 h-full px-2">
                     {menuItems.map((item) => (
                         <Link to={`${item.path}`}
                             key={item.name}

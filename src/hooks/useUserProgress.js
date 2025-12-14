@@ -158,7 +158,7 @@ export function useUserProgress() {
     if (hasCompletedToday) return false; // Already completed today
 
     const newStreak = streak + 1;
-    const newCoins = coins + coinReward;
+    const newCoins = parseInt(coins + coinReward);
 
     await updateStreak(newStreak);
     await updateCoins(newCoins);
